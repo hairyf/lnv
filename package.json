@@ -1,0 +1,15 @@
+{
+  "name": "@hairy/lnv",
+  "version": "1.0.0",
+  "description": "load next custom env",
+  "main": "index.js",
+  "bin": {
+    "lnv": "./index.js"
+  },
+  "keywords": [
+    "next",
+    "env"
+  ],
+  "author": "hairyf",
+  "license": "ISC"
+}
