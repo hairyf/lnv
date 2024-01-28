@@ -1,6 +1,6 @@
 # @hairy/lnv
 
-loading custom env in next is very cumbersome, so
+loading custom env in next.js is very cumbersome, so
 
 ## Installation
 
