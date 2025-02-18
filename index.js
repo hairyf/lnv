@@ -4,9 +4,11 @@ const yargs = require('yargs')
 const { hideBin } = require('yargs/helpers')
 const { version } = require('./package.json')
 const { getPackages } = require('@manypkg/get-packages')
-const { config } = require('dotenv')
+const { config, logger } = require('@dotenvx/dotenvx')
 const { relative } = require('pathe')
 const { writeFile } = require('fs/promises')
+
+logger.setLevel('error')
 
 const args = yargs(hideBin(process.argv))
   .scriptName('lnv')
@@ -40,6 +42,9 @@ async function main() {
 
   try {
     const envs = mode === 'dotenv' ? await dotenvx() : await dotenv()
+    if (envs.error)
+      return
+
     if (args.recursive) {
       const { packages } = await getPackages(process.cwd())
       const messages = [successfullyMessage]
@@ -59,12 +64,12 @@ async function main() {
 }
 
 async function dotenv() {
-  return config({ path: (mode && `.env.${mode}`) || undefined })
+  return config({ path: (mode && `.env.${mode}`) || undefined, ignore: [] })
 }
 
 async function dotenvx() {
-  const keyEnv = config({ path: '.env.key', processEnv: {} })
-  const defaultEnv = config({ path: '.env', processEnv: {} })
+  const keyEnv = config({ path: '.env.key', processEnv: {}, ignore: ['MISSING_ENV_FILE'] })
+  const defaultEnv = config({ path: '.env', processEnv: {}, ignore: ['MISSING_ENV_FILE'] })
 
   let DOTENV_KEY
   if (keyEnv.parsed?.DOTENV_KEY) {
@@ -78,10 +83,10 @@ async function dotenvx() {
   }
 
   if (!DOTENV_KEY)
-    throw new Error('No DOTENV_KEY found in .env|.env.key or process.env')
+    throw new Error('no DOTENV_KEY found in .env | .env.key or process.env')
   const envs = config({ DOTENV_KEY }) // If DOTENV_KEY found, get the .env.vault, load it to get shared env variables
   if (!envs.parsed || Object.keys(envs.parsed).length === 0)
-    throw new Error('No .env.vault found or it is empty')
+    throw new Error('no .env.vault found or it is empty')
 
   return envs
 }
@@ -96,7 +101,3 @@ async function write(filepath, parsed = {}) {
   ].join('\n')
   await writeFile(filepath, content, 'utf-8')
 }
-
-// console.log(cli)
-// if (mode)
-// require('fs').copyFileSync(`.env.${mode}`, '.env')
