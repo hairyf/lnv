@@ -12,7 +12,7 @@ pnpm add @hairy/lnv
 yarn add @hairy/lnv
 ```
 
-## usage
+## Usage
 
 Modify the script in `package.json`:
 
@@ -30,7 +30,7 @@ Or run the script command:
 pnpm lnv staging -r next dev
 ```
 
-or run any .js file:
+Or run any .js file:
 
 ```sh
 pnpm lnv staging -r node xxx.js
@@ -38,7 +38,7 @@ pnpm lnv staging -r node xxx.js
 
 > it load .env.{mode} to runtime environment
 
-## dotenv
+## Dotenv
 
 If you want to load the environment from the [dotenv](https://www.dotenvx.com/) service, you can use `lnv dotenv`. The `dotenv` identifier is specially marked and will read the `DOTENV_KEY` field from `.env` or `.env.key` to load the remote environment.
 
@@ -52,13 +52,13 @@ npx lnv dotenv --run <command>
 
 If you need to deploy on `vercel`, you must set the corresponding environment `key` using `npx vercel@latest env add DOTENV_KEY`.
 
-## monorepo
+## Monorepo
 
 If you want to apply the .env file to all projects in a monorepo, try using `lnv <mode> --monorepo --expose`. This will distribute the configuration from the current running directory to each sub project.
 
 > Warn: it is not recommended to use monorepo exports, as this increases the risk of variable exposure. You can load environment variables in subprojects by using `lnv <mode> -r <command>`, which will by default look for the config in the root directory.
 
-## options
+## Options
 
 ```sh
 lnv <mode> [args]
