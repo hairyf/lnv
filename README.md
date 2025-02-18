@@ -12,7 +12,7 @@ pnpm add @hairy/lnv
 yarn add @hairy/lnv
 ```
 
-## use
+## usage
 
 Modify the script in `package.json`:
 
