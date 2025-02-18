@@ -10,6 +10,9 @@
     "next",
     "env"
   ],
+  "files": [
+    "index.js"
+  ],
   "author": "hairyf",
   "license": "ISC",
   "dependencies": {
