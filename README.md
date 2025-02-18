@@ -37,22 +37,14 @@ pnpm lnv staging -r next dev
 If you want to load the environment from the [dotenv](https://www.dotenvx.com/) service, you can use `lnv dotenv`. The `dotenv` identifier is specially marked and will read the `DOTENV_KEY` field from `.env` or `.env.key` to load the remote environment.
 
 ```sh
-# Connect to this project env vault
-npx dotenv-vault@latest new vlt_...
-
-# or creating your project's env
-npx dotenv-vault@latest new
-
-# encrypt your .env.vault file and get you env key
-npx dotenv-vault@latest build
-npx dotenv-vault@latest keys
-
 # write and save .env.key
 echo "DOTENV_KEY=dotenv://:key_1234…vault?environment=production" > .env.key
 
 # load dotenv-vault remote environment
 npx lnv dotenv --run <command>
 ```
+
+If you need to deploy on `vercel`, you must set the corresponding environment `key` using `npx vercel@latest env add DOTENV_KEY`.
 
 ## monorepo
 
