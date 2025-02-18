@@ -2,7 +2,7 @@
 
 Loading custom env in next.js is very cumbersome, and dotenv runtime is not very user-friendly, so
 
-I think it can solve some of the problems you encounter in next.js or dotenv, maybe.
+I think it can solve some of the problems you encounter in next.js or dotenv.
 
 - More comprehensive support for running any script or `.js` file with environment variables.
 - Directly write to `process.env`, without saving locally, making it more discreet and secure.
