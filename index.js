@@ -54,7 +54,7 @@ async function main() {
     await write(`${root}/.env`, envs.parsed)
     console.log(successfullyMessage);
   } catch (error) {
-    console.error(`Failed to load ${name}`, error);
+    console.log(`Failed to load ${name}`, error.message)
   }
 }
 
