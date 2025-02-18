@@ -1,6 +1,13 @@
 # @hairy/lnv
 
-loading custom env in next.js is very cumbersome, so
+Loading custom env in next.js is very cumbersome, and dotenv runtime is not very user-friendly, so
+
+I think it can solve some of the problems you encounter in next.js or dotenv, maybe.
+
+- More comprehensive support for running any script or `.js` file with environment variables.
+- Directly write to `process.env`, without saving locally, making it more discreet and secure.
+- Supports Monorepo, automatically reading configuration from the root directory in a Monorepo.
+- Based on dotenv, and supports managing configurations using [vault.dotenv](https://vault.dotenv.org/ui/ui1/project/b0Cgew/env-vault).
 
 ## Install
 
