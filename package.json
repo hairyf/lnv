@@ -4,21 +4,33 @@
   "description": "load next custom env",
   "main": "index.js",
   "bin": {
-    "lnv": "./index.js"
+    "lnv": "./dist/index.js"
   },
   "keywords": [
     "next",
     "env"
   ],
   "files": [
-    "index.js"
+    "dist/index.js"
   ],
   "author": "hairyf",
   "license": "ISC",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.36.0",
     "@manypkg/get-packages": "^1.1.3",
+    "dotenv": "^16.4.7",
+    "execa": "^9.5.2",
     "pathe": "^2.0.3",
     "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "@types/yargs": "^17.0.32",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
   }
 }

@@ -19,7 +19,7 @@ Modify the script in `package.json`:
 ```json
 {
   "scripts": {
-    "dev:staging": "lnv staging && next dev"
+    "dev:staging": "lnv staging -r next dev"
   }
 }
 ```
@@ -27,10 +27,10 @@ Modify the script in `package.json`:
 Or run the script command:
 
 ```sh
-pnpm lnv staging
+pnpm lnv staging -r next dev
 ```
 
-> it just load .env.{mode} to .env
+> it load .env.{mode} to runtime environment
 
 ## dotenv
 
@@ -51,22 +51,24 @@ npx dotenv-vault@latest keys
 echo "DOTENV_KEY=dotenv://:key_1234…vault?environment=production" > .env.key
 
 # load dotenv-vault remote environment
-npx lnv dotenv
+npx lnv dotenv --run <command>
 ```
 
 ## monorepo
 
-If you want to apply the .env file to all projects in a monorepo, try using `-r` or `--recursive`. This will distribute the configuration from the current running directory to each sub project.
+If you want to apply the .env file to all projects in a monorepo, try using `lnv <mode> --monorepo --expose`. This will distribute the configuration from the current running directory to each sub project.
+
+> Warn: it is not recommended to use monorepo exports, as this increases the risk of variable exposure. You can load environment variables in subprojects by using `lnv <mode> -r <command>`, which will by default look for the config in the root directory.
+
+## options
 
 ```sh
-# or
-npx lnv staging -r
-```
+lnv <mode> [args]
 
-After success, the following information will be output:
-
-```sh
-Successfully loaded .env.staging to packages by
- - packages/project-1/.env
- - packages/project-2/.env
+args:
+  -r, --run       load runtime environment and run any scripts            [array]
+  -m, --monorepo  apply to packages in the monorepo                       [boolean]
+  -e, --expose    expose environment variables                            [boolean]
+  -h, --help      show help info                                          [boolean]
+  -v, --version   show version                                            [boolean]
 ```
