@@ -12,7 +12,7 @@ pnpm add @hairy/lnv
 yarn add @hairy/lnv
 ```
 
-## modify
+## use
 
 Modify the script in `package.json`:
 
@@ -28,6 +28,12 @@ Or run the script command:
 
 ```sh
 pnpm lnv staging -r next dev
+```
+
+or run any .js file:
+
+```sh
+pnpm lnv staging -r node xxx.js
 ```
 
 > it load .env.{mode} to runtime environment
