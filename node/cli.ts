@@ -4,9 +4,7 @@ import { version } from '../package.json'
 import { parseQuotes } from './utils'
 
 export function parse(): any {
-  const argv = parseQuotes(hideBin(process.argv))
-  console.log(argv)
-  return yargs(argv)
+  return yargs(parseQuotes(hideBin(process.argv)))
     .scriptName('lnv')
     .showHelpOnFail(false)
     .version(version)
