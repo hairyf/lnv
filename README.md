@@ -43,6 +43,12 @@ Or run any .js file:
 pnpm lnv staging -r node xxx.js
 ```
 
+If the execution script carries parameters, you can use quotes(` ' | " `)
+
+```sh
+pnpm lnv prod -r '<command> <args>'
+```
+
 > it load .env.{mode} to runtime environment
 
 ## Dotenv
