@@ -13,7 +13,7 @@ export function parse(): any {
     .alias('v', 'version')
     .option('run', {
       describe: 'load runtime environment and run any scripts',
-      type: 'string',
+      type: 'array',
       alias: 'r',
     })
     .option('monorepo', {
