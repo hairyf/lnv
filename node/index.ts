@@ -3,7 +3,8 @@
 import { dokey, expose, exposes, find, setup } from "./utils";
 import { parse } from './cli'
 import { config } from "dotenv";
-import execa from 'npm-run-script'
+import { execSync } from "child_process";
+
 
 const args = parse()
 
@@ -34,9 +35,15 @@ async function main() {
     console.log(successfullyMessage)
 
   if (args.run) {
+    const { execa } = await import('execa');
     const command = args.run?.join(' ') || ''
-    execa(command, { env: envs.parsed })
+    try {
+      await execa(command, { env: envs.parsed, stdout: 'inherit' })
+    } catch (error) {
+      execSync(command, { stdio: 'inherit' })
+    }
   }
+
 
   if (args.expose) {
     const exposeEnv = args.monorepo ? exposes : expose
