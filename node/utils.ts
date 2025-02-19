@@ -53,3 +53,44 @@ export async function exposes(parsed: Record<string, string> = {}) {
 export async function expose(parsed: Record<string, string> = {}) {
   write(`${root}/.env`, parsed)
 }
+
+export function parseQuotes(argv: string[]) {
+  const result = [];
+  let currentString = '';
+  let inQuotes = false;
+  let quoteChar = '';
+
+  for (const arg of argv) {
+      if (arg.startsWith("'") || arg.startsWith("`")) {
+          if (inQuotes) {
+              currentString += ' ' + arg.slice(1);
+          } else {
+              inQuotes = true;
+              quoteChar = arg[0];
+              currentString += arg.slice(1);
+          }
+      } else if (arg.endsWith("'") || arg.endsWith("`")) {
+          if (inQuotes && quoteChar === arg[arg.length - 1]) {
+              currentString += ' ' + arg.slice(0, -1);
+              result.push(currentString.trim());
+              currentString = '';
+              inQuotes = false;
+          } else {
+              result.push(arg);
+          }
+      } else {
+          if (inQuotes) {
+              currentString += ' ' + arg;
+          } else {
+              result.push(arg);
+          }
+      }
+  }
+
+  // 如果还有未结束的字符串，加入结果
+  if (currentString) {
+      result.push(currentString.trim());
+  }
+
+  return result;
+}

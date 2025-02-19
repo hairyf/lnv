@@ -1,9 +1,12 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { version } from '../package.json'
+import { parseQuotes } from './utils'
 
 export function parse(): any {
-  return yargs(hideBin(process.argv))
+  const argv = parseQuotes(hideBin(process.argv))
+  console.log(argv)
+  return yargs(argv)
     .scriptName('lnv')
     .showHelpOnFail(false)
     .version(version)
@@ -12,9 +15,8 @@ export function parse(): any {
     .alias('v', 'version')
     .option('run', {
       describe: 'load runtime environment and run any scripts',
-      type: 'array',
+      type: 'string',
       alias: 'r',
-      string: true
     })
     .option('monorepo', {
       describe: 'apply to packages in the monorepo.',
