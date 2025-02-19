@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "lnv test --run next dev --turbopack",
+    "dev": "lnv dotenv --run next dev --turbopack",
     "build": "lnv test --run next build",
     "start": "lnv test --run next start"
   },

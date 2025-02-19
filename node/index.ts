@@ -27,21 +27,25 @@ let successfullyMessage = dotenv
 command && (successfullyMessage += '\n')
 
 async function main() {
-  const envs = dotenv ? loadVault() : loadLocal()
+  try {
+    const envs = dotenv ? loadVault() : loadLocal()
 
-  if (envs.error)
-    return
+    if (envs.error)
+      return
 
-  console.log(successfullyMessage)
+    console.log(successfullyMessage)
 
-  const { execa } = await import('execa');
+    const { execa } = await import('execa');
 
-  command && execa(command, { env: envs.parsed, stdout: 'inherit' })
+    command && execa(command, { env: envs.parsed, stdout: 'inherit' })
 
-  if (args.expose) {
-    args.monorepo
-      ? await exposes(envs.parsed)
-      : await expose(envs.parsed)
+    if (args.expose) {
+      args.monorepo
+        ? await exposes(envs.parsed)
+        : await expose(envs.parsed)
+    }
+  } catch (error) {
+
   }
 }
 
@@ -57,6 +61,6 @@ function loadVault() {
   if (!DOTENV_KEY)
     throw new Error('no DOTENV_KEY found in .env | .env.key or process.env')
 
-  return setup(root, () => config({ DOTENV_KEY }))
+  return config({ DOTENV_KEY, path: find('.env.vault') })
 }
 
