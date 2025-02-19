@@ -36,7 +36,7 @@ async function main() {
 
   if (args.run) {
     await cmd(args.run, {
-      env: envs.parsed,
+      env: { ...process.env, ...envs.parsed },
       stdout: 'inherit'
     })
   }
