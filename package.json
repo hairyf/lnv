@@ -1,6 +1,6 @@
 {
   "name": "@hairy/lnv",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "load next custom env",
   "main": "index.js",
   "bin": {
@@ -18,7 +18,6 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "postinstall": "npm run build",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
