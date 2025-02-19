@@ -35,18 +35,10 @@ Or run the script command:
 
 ```sh
 pnpm lnv staging -r next dev
-```
-
-Or run any .js file:
-
-```sh
+# run .js file
 pnpm lnv staging -r node xxx.js
-```
-
-If the execution script carries parameters, you can use quotes(` ' | " `)
-
-```sh
-pnpm lnv prod -r '<command> <args>'
+# with args
+pnpm lnv prod -r 'next dev --arg1 xxx'
 ```
 
 > it load .env.{mode} to runtime environment
