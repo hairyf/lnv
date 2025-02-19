@@ -14,7 +14,6 @@ const dotenv = args._[0] === 'dotenv'
 const mode = args._[0]
 const file = dotenv ? '.env.vault' : mode
   ? `.env.${mode}` : '.env'
-const command = args.run?.join(' ') || ''
 
 let suffix = args.expose
   ? args.monorepo ? 'packages by' : '.env'
@@ -24,28 +23,25 @@ let successfullyMessage = dotenv
   ? `Successfully decrypted ${file} to ${suffix}`
   : `Successfully loaded ${file} to ${suffix}`
 
-command && (successfullyMessage += '\n')
+args.run?.length && (successfullyMessage += '\n')
 
 async function main() {
-  try {
-    const envs = dotenv ? loadVault() : loadLocal()
+  const envs = dotenv ? loadVault() : loadLocal()
 
-    if (envs.error)
-      return
-
+  if (envs.error)
+    console.log(`Failed to load ${file}, searched upwards, but the file was not found`)
+  else
     console.log(successfullyMessage)
 
+  if (args.run) {
     const { execa } = await import('execa');
+    const command = args.run?.join(' ') || ''
+    execa(command, { env: envs.parsed, stdout: 'inherit' })
+  }
 
-    command && execa(command, { env: envs.parsed, stdout: 'inherit' })
-
-    if (args.expose) {
-      args.monorepo
-        ? await exposes(envs.parsed)
-        : await expose(envs.parsed)
-    }
-  } catch (error) {
-
+  if (args.expose) {
+    const exposeEnv = args.monorepo ? exposes : expose
+    await exposeEnv(envs.parsed)
   }
 }
 
@@ -56,7 +52,7 @@ function loadLocal() {
 }
 
 function loadVault() {
-  const { DOTENV_KEY, root } = dokey('.env.key') || dokey('.env')
+  const DOTENV_KEY = dokey('.env.key') || process.env.DOTENV_KEY || dokey('.env')
 
   if (!DOTENV_KEY)
     throw new Error('no DOTENV_KEY found in .env | .env.key or process.env')

@@ -13,11 +13,8 @@ export function setup<T>(root = '', hook: () => T) {
   return result
 }
 export function dokey(file: string) {
-  const filepath = find(file)
-  const root = filepath ? path.dirname(filepath) : undefined
-  const envs = config({ processEnv: {}, path: filepath })
-  const DOTENV_KEY = envs.parsed?.DOTENV_KEY || process.env.DOTENV_KEY
-  return { root, filepath, DOTENV_KEY }
+  const envs = config({ processEnv: {}, path: find(file) })
+  return envs.parsed?.DOTENV_KEY
 }
 
 export function find(file: string) {
