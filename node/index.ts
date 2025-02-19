@@ -3,7 +3,7 @@
 import { dokey, expose, exposes, find, setup } from "./utils";
 import { parse } from './cli'
 import { config } from "dotenv";
-
+import execa from 'npm-run-script'
 
 const args = parse()
 
@@ -34,9 +34,8 @@ async function main() {
     console.log(successfullyMessage)
 
   if (args.run) {
-    const { execa } = await import('execa');
     const command = args.run?.join(' ') || ''
-    execa(command, { env: envs.parsed, stdout: 'inherit' })
+    execa(command, { env: envs.parsed })
   }
 
   if (args.expose) {
