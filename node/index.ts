@@ -15,6 +15,7 @@ const dotenv = args._[0] === 'dotenv'
 const mode = args._[0]
 const file = dotenv ? '.env.vault' : mode
   ? `.env.${mode}` : '.env'
+const exp = args.monorepo ? exposes : expose
 
 let suffix = args.expose
   ? args.monorepo ? 'packages by' : '.env'
@@ -27,34 +28,24 @@ let successfullyMessage = dotenv
 args.run?.length && (successfullyMessage += '\n')
 
 async function main() {
-  const envs = dotenv ? loadVault() : loadLocal()
+  const envs = dotenv ? vaultEnv() : localEnv()
 
   if (envs.error)
     console.log(`Failed to load ${file}, searched upwards, but the file was not found`)
   else
     console.log(successfullyMessage)
 
-  if (args.run) {
-    await cmd(args.run, {
-      env: { ...process.env, ...envs.parsed },
-      stdout: 'inherit'
-    })
-  }
-
-
-  if (args.expose) {
-    const exposeEnv = args.monorepo ? exposes : expose
-    await exposeEnv(envs.parsed)
-  }
+  args.run && await cmd(args.run, envs.parsed)
+  args.expose && await exp(envs.parsed)
 }
 
 main()
 
-function loadLocal() {
+function localEnv() {
   return config({ path: find(file) })
 }
 
-function loadVault() {
+function vaultEnv() {
   const DOTENV_KEY = dokey('.env.key') || process.env.DOTENV_KEY || dokey('.env')
 
   if (!DOTENV_KEY)
@@ -63,12 +54,13 @@ function loadVault() {
   return config({ DOTENV_KEY, path: find('.env.vault') })
 }
 
-async function cmd(command?: string | string[], options?: any) {
+async function cmd(command?: string | string[], env?: Record<string, string>) {
   if (Array.isArray(command))
     command = command.join(' ')
+  const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
   try {
-    const { execa } = await import('execa');
-    await execa(command, options)
+    const { execaSync } = await import('execa')
+    execaSync(command, options)
   } catch (error) {
     execSync(command, options)
   }
