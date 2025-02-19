@@ -35,13 +35,10 @@ async function main() {
     console.log(successfullyMessage)
 
   if (args.run) {
-    const { execa } = await import('execa');
-    const command = args.run?.join(' ') || ''
-    try {
-      await execa(command, { env: envs.parsed, stdout: 'inherit' })
-    } catch (error) {
-      execSync(command, { stdio: 'inherit' })
-    }
+    await cmd(args.run, {
+      env: envs.parsed,
+      stdout: 'inherit'
+    })
   }
 
 
@@ -66,3 +63,13 @@ function loadVault() {
   return config({ DOTENV_KEY, path: find('.env.vault') })
 }
 
+async function cmd(command?: string | string[], options?: any) {
+  if (Array.isArray(command))
+    command = command.join(' ')
+  try {
+    const { execa } = await import('execa');
+    await execa(command, options)
+  } catch (error) {
+    execSync(command, options)
+  }
+}
