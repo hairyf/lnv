@@ -4,7 +4,8 @@ import { version } from '../package.json'
 import { quotes } from './utils'
 
 export function createYargsArgv() {
-  return yargs(quotes(hideBin(process.argv)))
+  const argv = quotes(hideBin(process.argv))
+  return yargs(argv)
     .scriptName('lnv')
     .showHelpOnFail(false)
     .version(version)

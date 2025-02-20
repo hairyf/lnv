@@ -27,13 +27,18 @@ export async function cmd(command: string | string[], env?: Record<string, strin
     command = command.join(' ')
   if (!command)
     throw new Error('Unable to run empty running script')
+  const { execaSync } = await import('execa')
+
   const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
-  try {
-    const { execaSync } = await import('execa')
-    execaSync(command, options)
-  } catch (error) {
-    execSync(command, options)
+  const commands = command.split('&&').map(cmd => cmd.trim())
+  for (const command of commands) {
+    try {
+      execaSync(command, options)
+    } catch (error) {
+      execSync(command, options)
+    }
   }
+
 }
 
 export function load(file: string) {
