@@ -29,8 +29,6 @@ async function main() {
   if (!files.length)
     throw new Error(`Please enter lnv <modes> the loading mode`)
 
-  argv.e && !argv.m && files.splice(0, 1)
-
   const parsed: Record<string, string> = {}
   const parsedFiles: string[] = []
 
@@ -46,10 +44,12 @@ async function main() {
   }
 
   const parsedMode = argv.e ? 'exposed' : 'loaded'
-  const suffix = argv.m ? 'packages by' : 'runtime environment'
+  const suffix = !argv.r
+    ? argv.m ? 'packages by' : 'env'
+    : 'runtime environment'
   const successfullyMessage = `Successfully ${parsedMode} ${parsedFiles.join('|')} to ${suffix}`
 
-  argv.r && logger.log(successfullyMessage)
+  argv.r && logger.log(successfullyMessage + '\n')
   argv.r && await cmd(argv.r, parsed)
   argv.e && await exp(argv.m, parsed)
   argv.e && logger.don(successfullyMessage)

@@ -4,9 +4,10 @@ export const logger = {
   wait(...data: any[]) {
     this.wait_stacks.push(...data)
   },
-  don(...data: any[]) {
+  don(...data) {
     data.length && console.log(...data)
     this.wait_stacks.forEach(data => console.log(data));
     this.wait_stacks = []
+    console.log()
   }
 }
