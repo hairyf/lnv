@@ -1,4 +1,5 @@
 {
+  "name": "project-next",
   "private": true,
   "scripts": {
     "dev": "lnv dotenv --run next dev --turbopack",

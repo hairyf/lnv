@@ -1,67 +1,58 @@
 #!/usr/bin/env node
 
-import { dokey, expose, exposes, find, setup } from "./utils";
-import { parse } from './cli'
-import { config } from "dotenv";
-import { execSync } from "child_process";
+import { cmd, exp, load, m2fi, uniq } from "./utils";
+import { createYargsArgv } from './cli'
+import { logger } from "./log";
 
+const argv: any = createYargsArgv().parse()
 
-const args = parse()
-
-if (!args.monorepo && !args._[0])
-  throw new Error(`Please enter lnv <mode> the loading mode`)
-
-const dotenv = args._[0] === 'dotenv'
-const mode = args._[0]
-const file = dotenv ? '.env.vault' : mode
-  ? `.env.${mode}` : '.env'
-const exp = args.monorepo ? exposes : expose
-
-let suffix = args.expose
-  ? args.monorepo ? 'packages by' : '.env'
-  : 'runtime environment'
-
-let successfullyMessage = dotenv
-  ? `Successfully decrypted ${file} to ${suffix}`
-  : `Successfully loaded ${file} to ${suffix}`
-
-args.run?.length && (successfullyMessage += '\n')
+async function mainTryError() {
+  await main().catch(error => {
+    console.warn(`LNV Error: ${error.message}`)
+    process.exit()
+  })
+}
 
 async function main() {
-  const envs = dotenv ? vaultEnv() : localEnv()
+  if (!argv.e && !argv.r)
+    throw new Error('Missing required --expose|-e or --run|-r options')
 
-  if (envs.error)
-    console.log(`Failed to load ${file}, searched upwards, but the file was not found`)
-  else
-    console.log(successfullyMessage)
+  if (argv.m && argv.r)
+    throw new Error('In monorepo, the run script cannot be run')
 
-  args.run && await cmd(args.run, envs.parsed)
-  args.expose && await exp(envs.parsed)
-}
+  if (argv.e && argv.r)
+    throw new Error('Expose and run cannot run simultaneously')
 
-main()
+  const modes = [argv.d && 'env', ...(argv._ || []), argv.d && 'local']
+  const files = uniq(modes).filter(Boolean).map(m2fi)
 
-function localEnv() {
-  return config({ path: find(file) })
-}
+  if (!files.length)
+    throw new Error(`Please enter lnv <modes> the loading mode`)
 
-function vaultEnv() {
-  const DOTENV_KEY = dokey('.env.key') || process.env.DOTENV_KEY || dokey('.env')
+  argv.e && !argv.m && files.splice(0, 1)
 
-  if (!DOTENV_KEY)
-    throw new Error('no DOTENV_KEY found in .env | .env.key or process.env')
+  const parsed: Record<string, string> = {}
+  const parsedFiles: string[] = []
 
-  return config({ DOTENV_KEY, path: find('.env.vault') })
-}
-
-async function cmd(command?: string | string[], env?: Record<string, string>) {
-  if (Array.isArray(command))
-    command = command.join(' ')
-  const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
-  try {
-    const { execaSync } = await import('execa')
-    execaSync(command, options)
-  } catch (error) {
-    execSync(command, options)
+  for (const file of files) {
+    const envs = load(file)
+    if (!envs || envs?.error) {
+      if (!(argv.d && (file === 'env' || file === 'env.local')))
+        logger.log(`Failed to loading ${file} file not found in all scopes`)
+      continue
+    }
+    Object.assign(parsed, envs.parsed)
+    parsedFiles.unshift(file)
   }
+
+  const parsedMode = argv.e ? 'exposed' : 'loaded'
+  const suffix = argv.m ? 'packages by' : 'runtime environment'
+  const successfullyMessage = `Successfully ${parsedMode} ${parsedFiles.join('|')} to ${suffix}`
+
+  argv.r && logger.log(successfullyMessage)
+  argv.r && await cmd(argv.r, parsed)
+  argv.e && await exp(argv.m, parsed)
+  argv.e && logger.don(successfullyMessage)
 }
+
+mainTryError()

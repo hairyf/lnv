@@ -1,14 +1,14 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { version } from '../package.json'
-import { parseQuotes } from './utils'
+import { quotes } from './utils'
 
-export function parse(): any {
-  return yargs(parseQuotes(hideBin(process.argv)))
+export function createYargsArgv() {
+  return yargs(quotes(hideBin(process.argv)))
     .scriptName('lnv')
     .showHelpOnFail(false)
     .version(version)
-    .usage('$0 <mode> [args]')
+    .usage('lnv <mode> [args]')
     .alias('h', 'help')
     .alias('v', 'version')
     .option('run', {
@@ -26,6 +26,10 @@ export function parse(): any {
       alias: 'e',
       type: 'boolean'
     })
+    .option('default', {
+      describe: 'the default environment (env|...|env.local) be loaded',
+      alias: 'd',
+      type: 'boolean',
+    })
     .help()
-    .parse()
 }

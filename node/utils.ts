@@ -2,19 +2,56 @@ import path from "pathe"
 import fs from "fs"
 import { config } from 'dotenv'
 import { getPackages } from '@manypkg/get-packages';
+import { execSync } from "child_process";
+import { logger } from "./log";
+
 const root = process.cwd()
 
-export function setup<T>(root = '', hook: () => T) {
-  const source = process.cwd
-  if (root)
-    process.cwd = () => root
-  const result = hook()
-  process.cwd = source
-  return result
+export async function exp(monorepo: boolean, parsed: Record<string, string> = {}) {
+  if (!monorepo) {
+    write(`${root}/.env`, parsed)
+    return
+  }
+  const { packages, root: packRoot } = await getPackages(process.cwd())
+  if (packRoot.dir !== root) {
+    logger.warn('Subproject exposes environment. If is correct, ignore this message.')
+  }
+  for (const pack of packages.filter(pack => pack.dir !== root)) {
+    logger.wait(` - ${path.relative(root, pack.dir)}/.env`)
+    write(`${pack.dir}/.env`, parsed)
+  }
 }
-export function dokey(file: string) {
-  const envs = config({ processEnv: {}, path: find(file) })
-  return envs.parsed?.DOTENV_KEY
+
+export async function cmd(command: string | string[], env?: Record<string, string>) {
+  if (Array.isArray(command))
+    command = command.join(' ')
+  if (!command)
+    throw new Error('Unable to run empty running script')
+  const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
+  try {
+    const { execaSync } = await import('execa')
+    execaSync(command, options)
+  } catch (error) {
+    execSync(command, options)
+  }
+}
+
+export function load(file: string) {
+  file = '.' + file
+  const filepath = find(file)
+
+  if (!filepath)
+    return undefined
+
+  if (file !== '.env.vault')
+    return config({ path: filepath, processEnv: {} })
+
+  const DOTENV_KEY = dokey('.env.key') || process.env.DOTENV_KEY || dokey('.env')
+
+  if (!DOTENV_KEY)
+    throw new Error('no DOTENV_KEY found in .env | .env.key or process.env')
+
+  return config({ DOTENV_KEY, path: filepath })
 }
 
 export function find(file: string) {
@@ -31,6 +68,21 @@ export function find(file: string) {
   return undefined;
 }
 
+export function uniq<T>(array: T[]) {
+  return [...new Set([...array])]
+}
+
+export function m2fi(mod: string) {
+  return mod !== 'env'
+    ? mod === 'dotenv' ? 'env.vault' : `env.${mod}`
+    : mod
+}
+
+export function dokey(file: string) {
+  const envs = config({ processEnv: {}, path: find(file) })
+  return envs.parsed?.DOTENV_KEY
+}
+
 export function write(filepath: string, parsed = {}) {
   const contents = Object.entries(parsed)
     .map(([key, value]) => `${key}=${value}`)
@@ -42,55 +94,40 @@ export function write(filepath: string, parsed = {}) {
   fs.writeFileSync(filepath, content, 'utf-8')
 }
 
-export async function exposes(parsed: Record<string, string> = {}) {
-  const { packages } = await getPackages(process.cwd())
-  for (const pack of packages) {
-    console.log(` - ${path.relative(root, pack.dir)}/.env`)
-    write(`${pack.dir}/.env`, parsed)
-  }
-}
-
-export async function expose(parsed: Record<string, string> = {}) {
-  write(`${root}/.env`, parsed)
-}
-
-export function parseQuotes(argv: string[]) {
-  const result = [];
+export function quotes(argv: string[]) {
+  const parsed: string[] = [];
   let currentString = '';
   let inQuotes = false;
   let quoteChar = '';
 
   for (const arg of argv) {
-      if (arg.startsWith("'") || arg.startsWith("`")) {
-          if (inQuotes) {
-              currentString += ' ' + arg.slice(1);
-          } else {
-              inQuotes = true;
-              quoteChar = arg[0];
-              currentString += arg.slice(1);
-          }
-      } else if (arg.endsWith("'") || arg.endsWith("`")) {
-          if (inQuotes && quoteChar === arg[arg.length - 1]) {
-              currentString += ' ' + arg.slice(0, -1);
-              result.push(currentString.trim());
-              currentString = '';
-              inQuotes = false;
-          } else {
-              result.push(arg);
-          }
+    if (arg.startsWith("'") || arg.startsWith("`")) {
+      if (inQuotes) {
+        currentString += ' ' + arg.slice(1);
       } else {
-          if (inQuotes) {
-              currentString += ' ' + arg;
-          } else {
-              result.push(arg);
-          }
+        inQuotes = true;
+        quoteChar = arg[0];
+        currentString += arg.slice(1);
       }
+    } else if (arg.endsWith("'") || arg.endsWith("`")) {
+      if (inQuotes && quoteChar === arg[arg.length - 1]) {
+        currentString += ' ' + arg.slice(0, -1);
+        parsed.push(currentString.trim());
+        currentString = '';
+        inQuotes = false;
+      } else {
+        parsed.push(arg);
+      }
+    } else {
+      if (inQuotes) {
+        currentString += ' ' + arg;
+      } else {
+        parsed.push(arg);
+      }
+    }
   }
 
-  // 如果还有未结束的字符串，加入结果
-  if (currentString) {
-      result.push(currentString.trim());
-  }
+  currentString && parsed.push(currentString.trim())
 
-  return result;
+  return parsed;
 }

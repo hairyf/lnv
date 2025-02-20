@@ -2,11 +2,12 @@
 
 Loading custom env in next.js is very cumbersome, and dotenv runtime is not very user-friendly, so
 
-I think it can solve some of the problems you encounter in next.js or dotenv.
+I think it can solve some of the problems you encounter in next.js or dotenv or more.
 
+- Multi-mode loading allow you to load `.env`, `.env.prod`, `.env.local` or more, and so on simultaneously in order.
+- Support Monorepo, if the current directory is not found, perform a deep search upwards
 - More comprehensive support for running any script or `.js` file with environment variables.
 - Directly write to `process.env`, without saving locally, making it more discreet and secure.
-- Supports Monorepo, automatically reading configuration from the root directory in a Monorepo.
 - Based on dotenv, and supports managing configurations using [vault.dotenv](https://vault.dotenv.org/ui/ui1/project/b0Cgew/env-vault).
 
 ## Install
@@ -43,9 +44,20 @@ pnpm lnv prod -r 'next dev --arg1 xxx'
 
 > it load .env.{mode} to runtime environment
 
-## Dotenv
+## Default
 
-If you want to load the environment from the [dotenv](https://www.dotenvx.com/) service, you can use `lnv dotenv`. The `dotenv` identifier is specially marked and will read the `DOTENV_KEY` field from `.env` or `.env.key` to load the remote environment.
+The `lnv` command does not load the `.env` and `.env.local` files by default. You can enable this default loading by using `--default | -d`. This command is equivalent to `lnv env local`.
+
+```sh
+# loading .env.prod|.env.local|.env to runtime environment
+lnv prod -d -r 'node index.js'
+# same as the following script
+lnv local prod env -r 'node index.js'
+```
+
+## Vault
+
+If you want to load the environment from the [dotenv](https://www.dotenvx.com/) service, you can use `lnv vault`. The `vault` identifier is specially marked and will read the `DOTENV_KEY` field from `.env.key` to load the remote environment.
 
 ```sh
 # write and save .env.key
@@ -72,6 +84,7 @@ args:
   -r, --run       load runtime environment and run any scripts            [array]
   -m, --monorepo  apply to packages in the monorepo                       [boolean]
   -e, --expose    expose environment variables                            [boolean]
+  -d, --default   the default environment (env|...|env.local) be loaded   [boolean]
   -h, --help      show help info                                          [boolean]
   -v, --version   show version                                            [boolean]
 ```

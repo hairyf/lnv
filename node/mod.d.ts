@@ -1,1 +1,0 @@
-declare module "npm-run-script"

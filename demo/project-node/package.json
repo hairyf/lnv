@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "lnv test -r 'node test.js'"
+    "dev": "lnv -d -r 'node test.js'"
   },
   "dependencies": {
     "@hairy/lnv": "workspace:^"
