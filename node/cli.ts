@@ -4,7 +4,7 @@ import { version } from '../package.json'
 import { quotes } from './utils'
 
 export function createYargsArgv() {
-  const argv = quotes(hideBin(process.argv))
+  const argv = runs(quotes(hideBin(process.argv)))
   return yargs(argv)
     .scriptName('lnv')
     .showHelpOnFail(false)
@@ -33,4 +33,21 @@ export function createYargsArgv() {
       type: 'boolean',
     })
     .help()
+}
+
+function runs(argv: string[]) {
+  const news: string[] = []
+  const runs = []
+  let is = false
+  for (const arg of argv) {
+    is ? runs.push(arg) : news.push(arg)
+    if (arg === '-r' || arg === '--run')
+      is = true
+    if (arg === '-' || arg === '--') {
+      news.splice(news.length - 1, 1, '-r')
+      is = true
+    }
+  }
+  runs.length && news.push(runs.join(' '))
+  return news
 }

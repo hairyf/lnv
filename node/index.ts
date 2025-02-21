@@ -12,7 +12,6 @@ async function mainTryError() {
     process.exit()
   })
 }
-
 async function main() {
   if (!argv.e && !argv.r)
     throw new Error('Missing required --expose|-e or --run|-r options')

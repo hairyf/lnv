@@ -27,7 +27,7 @@ Modify the script in `package.json`:
 ```json
 {
   "scripts": {
-    "dev:staging": "lnv staging -r next dev"
+    "dev:staging": "lnv staging -- next dev"
   }
 }
 ```
@@ -35,11 +35,12 @@ Modify the script in `package.json`:
 Or run the script command:
 
 ```sh
-pnpm lnv staging -r next dev
+# -r | --run | --
+pnpm lnv staging --run next dev
 # run .js file
-pnpm lnv staging -r node xxx.js
+pnpm lnv staging -- node xxx.js
 # with args
-pnpm lnv prod -r 'next dev --arg1 xxx'
+pnpm lnv prod -r next dev --arg1 xxx
 ```
 
 > it load .env.{mode} to runtime environment
@@ -50,9 +51,9 @@ The `lnv` command does not load the `.env` and `.env.local` files by default. Yo
 
 ```sh
 # loading .env.prod|.env.local|.env to runtime environment
-lnv prod -d -r 'node index.js'
+lnv prod -d -r node index.js
 # same as the following script
-lnv local prod env -r 'node index.js'
+lnv local prod env -r node index.js
 ```
 
 ## Vault
@@ -64,7 +65,7 @@ If you want to load the environment from the [dotenv](https://www.dotenvx.com/) 
 echo "DOTENV_KEY=dotenv://:key_1234…vault?environment=production" > .env.key
 
 # load dotenv-vault remote environment
-npx lnv dotenv --run <command>
+npx lnv dotenv -- <command with arguments>
 ```
 
 If you need to deploy on `vercel`, you must set the corresponding environment `key` using `npx vercel@latest env add DOTENV_KEY`.
@@ -81,10 +82,10 @@ If you want to apply the .env file to all projects in a monorepo, try using `lnv
 lnv <mode> [args]
 
 args:
-  -r, --run       load runtime environment and run any scripts            [array]
-  -m, --monorepo  apply to packages in the monorepo                       [boolean]
-  -e, --expose    expose environment variables                            [boolean]
-  -d, --default   the default environment (env|...|env.local) be loaded   [boolean]
-  -h, --help      show help info                                          [boolean]
-  -v, --version   show version                                            [boolean]
+  -r, --, --run      load runtime environment and run any scripts            [array]
+  -m, --monorepo     apply to packages in the monorepo                       [boolean]
+  -e, --expose       expose environment variables                            [boolean]
+  -d, --default      the default environment (env|...|env.local) be loaded   [boolean]
+  -h, --help         show help info                                          [boolean]
+  -v, --version      show version                                            [boolean]
 ```
