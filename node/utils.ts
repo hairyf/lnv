@@ -31,7 +31,10 @@ export async function cmd(command: string | string[], env?: Record<string, strin
 
   const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
   const commands = command.split('&&').map(cmd => cmd.trim())
-  for (const command of commands) {
+  for (let command of commands) {
+    if (process.platform.startsWith('win') && command.includes('.sh') && !command.startsWith('sh ')) {
+      command = 'sh ' + command
+    }
     try {
       execaSync(command, options)
     } catch (error) {

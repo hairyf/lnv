@@ -27,7 +27,7 @@ async function main() {
   const files = uniq(modes).filter(Boolean).map(m2fi)
 
   if (!files.length)
-    throw new Error(`Please enter lnv <modes> the loading mode`)
+    console.warn('No environment variables loaded')
 
   const parsed: Record<string, string> = {}
   const parsedFiles: string[] = []
@@ -49,10 +49,10 @@ async function main() {
     : 'runtime environment'
   const successfullyMessage = `Successfully ${parsedMode} ${parsedFiles.join('|')} to ${suffix}`
 
-  argv.r && logger.log(successfullyMessage + '\n')
+  argv.r && files.length && logger.log(successfullyMessage + '\n')
   argv.r && await cmd(argv.r, parsed)
   argv.e && await exp(argv.m, parsed)
-  argv.e && logger.don(successfullyMessage)
+  argv.e && files.length && logger.don(successfullyMessage)
 }
 
 mainTryError()
