@@ -45,10 +45,10 @@ async function main() {
   const parsedMode = argv.e ? 'exposed' : 'loaded'
   const suffix = !argv.r
     ? argv.m ? 'packages by' : 'env'
-    : 'runtime environment'
+    : 'runtime environment' 
   const successfullyMessage = `Successfully ${parsedMode} ${parsedFiles.join('|')} to ${suffix}`
 
-  argv.r && files.length && logger.log(successfullyMessage + '\n')
+  argv.r && files.length ? logger.log(successfullyMessage + '\n') : logger.log('')
   argv.r && await cmd(argv.r, parsed)
   argv.e && await exp(argv.m, parsed)
   argv.e && files.length && logger.don(successfullyMessage)
