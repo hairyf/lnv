@@ -6,6 +6,7 @@ import { execSync } from "child_process";
 import { logger } from "./log";
 
 const root = process.cwd()
+const ProcessENV: any = {}
 
 export async function exp(monorepo: boolean, parsed: Record<string, string> = {}) {
   if (!monorepo) {
@@ -43,7 +44,6 @@ export async function cmd(command: string | string[], env?: Record<string, strin
   }
 
 }
-
 export function load(file: string) {
   file = '.' + file
   const filepath = find(file)
@@ -52,12 +52,13 @@ export function load(file: string) {
     return undefined
 
   if (file !== '.env.vault')
-    return config({ path: filepath, processEnv: {} })
+    return config({ path: filepath, processEnv: ProcessENV })
 
-  const DOTENV_KEY = dokey('.env.key') || process.env.DOTENV_KEY || dokey('.env')
+  const DOTENV_KEY = dokey('.env.key') || ProcessENV.DOTENV_KEY || process.env.DOTENV_KEY || dokey('.env')
+
 
   if (!DOTENV_KEY)
-    throw new Error('no DOTENV_KEY found in .env | .env.key or process.env')
+    throw new Error('No DOTENV_KEY found in .env|.env.key or process.env')
 
   return config({ DOTENV_KEY, path: filepath })
 }
@@ -87,7 +88,7 @@ export function m2fi(mod: string) {
 }
 
 export function dokey(file: string) {
-  const envs = config({ processEnv: {}, path: find(file) })
+  const envs = config({ processEnv: {}, DOTENV_KEY: undefined, path: find(file) })
   return envs.parsed?.DOTENV_KEY
 }
 

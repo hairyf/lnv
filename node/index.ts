@@ -8,7 +8,7 @@ const argv: any = createYargsArgv().parse()
 
 async function mainTryError() {
   await main().catch(error => {
-    console.warn(`LNV Error: ${error.message}`)
+    console.warn(`${error.message}`)
     process.exit()
   })
 }
@@ -22,11 +22,8 @@ async function main() {
   if (argv.e && argv.r)
     throw new Error('Expose and run cannot run simultaneously')
 
-  const modes = [argv.d && 'env', ...(argv._ || []), argv.d && 'local']
+  const modes = [argv.d && 'env', ...(argv._ || []), argv.d && 'local', ...(argv.mode || [])]
   const files = uniq(modes).filter(Boolean).map(m2fi)
-
-  if (!files.length)
-    console.warn('No environment variables loaded')
 
   const parsed: Record<string, string> = {}
   const parsedFiles: string[] = []
@@ -42,16 +39,39 @@ async function main() {
     parsedFiles.unshift(file)
   }
 
+  for (const kv of argv.v || []) {
+    const [key, value] = kv.split('=')
+    if (!key || typeof value === 'undefined')
+      console.warn(`Invalid manual environment variable: ${kv}`)
+    else
+      parsed[key] = value || ''
+  }
+
+  if (!argv.v?.length && !files.length && !parsedFiles.length)
+    console.warn('No environment variables loaded')
+
   const parsedMode = argv.e ? 'exposed' : 'loaded'
   const suffix = !argv.r
     ? argv.m ? 'packages by' : 'env'
-    : 'runtime environment' 
-  const successfullyMessage = `Successfully ${parsedMode} ${parsedFiles.join('|')} to ${suffix}`
+    : 'runtime environment'
+  let successfullyMessage = parsedFiles.length
+    ? `Successfully ${parsedMode} ${parsedFiles.join('|')} to ${suffix}`
+    : argv.v?.length ? `Successfully manual loaded environment variables`
+      : ''
 
-  argv.r && files.length ? logger.log(successfullyMessage + '\n') : logger.log('')
+  if (argv.v) {
+    parsedFiles.length && (successfullyMessage += ' with manual loaded variables')
+    for (const kv of argv.v) {
+      const [key, value] = kv.split('=')
+      typeof value !== 'undefined' && (successfullyMessage += `\n  ${key}=${value}`)
+    }
+  }
+
+
+  argv.r && (parsedFiles.length || argv.v) ? logger.log(successfullyMessage + '\n') : logger.log('')
   argv.r && await cmd(argv.r, parsed)
   argv.e && await exp(argv.m, parsed)
-  argv.e && files.length && logger.don(successfullyMessage)
+  argv.e && parsedFiles.length && logger.don(successfullyMessage)
 }
 
 mainTryError()

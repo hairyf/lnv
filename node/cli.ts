@@ -11,11 +11,19 @@ export function createYargsArgv() {
     .version(version)
     .usage('lnv <mode> [args]')
     .alias('h', 'help')
-    .alias('v', 'version')
+    .option('value', {
+      type: 'array',
+      alias: 'v',
+      describe: 'set environment variables',
+    })
     .option('run', {
       describe: 'load runtime environment and run any scripts',
       type: 'array',
       alias: 'r',
+    })
+    .option('mode', {
+      describe: 'Manual selection mode',
+      type: 'array',
     })
     .option('monorepo', {
       describe: 'apply to packages in the monorepo.',
@@ -39,7 +47,13 @@ function runs(argv: string[]) {
   const news: string[] = []
   const runs = []
   let is = false
+  
   for (const arg of argv) {
+    if (is && (arg === 'e;')) {
+      news.push(runs.join(' '))
+      is = false
+      continue
+    }
     is ? runs.push(arg) : news.push(arg)
     if (arg === '-r' || arg === '--run')
       is = true
@@ -48,6 +62,8 @@ function runs(argv: string[]) {
       is = true
     }
   }
-  runs.length && news.push(runs.join(' '))
+
+  is && runs.length && news.push(runs.join(' '))
+
   return news
 }
