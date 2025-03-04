@@ -162,7 +162,7 @@ var import_yargs = __toESM(require("yargs"));
 var import_helpers = require("yargs/helpers");
 
 // package.json
-var version = "5.5.0";
+var version = "5.6.0";
 
 // node/cli.ts
 function createYargsArgv() {
