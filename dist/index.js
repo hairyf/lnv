@@ -27,7 +27,7 @@ var import_pathe = __toESM(require("pathe"));
 var import_fs = __toESM(require("fs"));
 var import_dotenv = require("dotenv");
 var import_get_packages = require("@manypkg/get-packages");
-var import_child_process = require("child_process");
+var import_cross_spawn = __toESM(require("cross-spawn"));
 
 // node/log.ts
 var logger = {
@@ -66,18 +66,14 @@ async function cmd(command, env) {
     command = command.join(" ");
   if (!command)
     throw new Error("Unable to run empty running script");
-  const { execaSync } = await import("execa");
+  const { execa } = await import("execa");
   const options = { stdio: "inherit", env: { ...process.env, ...env } };
   const commands = command.split("&&").map((cmd2) => cmd2.trim());
   for (let command2 of commands) {
     if (process.platform.startsWith("win") && command2.includes(".sh") && !command2.startsWith("sh ")) {
       command2 = "sh " + command2;
     }
-    try {
-      execaSync(command2, options);
-    } catch (error) {
-      (0, import_child_process.execSync)(command2, options);
-    }
+    import_cross_spawn.default.sync(command2, options);
   }
 }
 function load(file) {
@@ -250,7 +246,7 @@ async function main() {
     else
       parsed[key] = value || "";
   }
-  if (!argv.v?.length && !files.length && !parsedFiles.length)
+  if (!argv.v?.length && (!files.length || !parsedFiles.length))
     console.warn("No environment variables loaded");
   const parsedMode = argv.e ? "exposed" : "loaded";
   const suffix = !argv.r ? argv.m ? "packages by" : "env" : "runtime environment";

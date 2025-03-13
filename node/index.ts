@@ -47,7 +47,7 @@ async function main() {
       parsed[key] = value || ''
   }
 
-  if (!argv.v?.length && !files.length && !parsedFiles.length)
+  if (!argv.v?.length && (!files.length || !parsedFiles.length))
     console.warn('No environment variables loaded')
 
   const parsedMode = argv.e ? 'exposed' : 'loaded'
