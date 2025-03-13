@@ -28,7 +28,6 @@ export async function cmd(command: string | string[], env?: Record<string, strin
     command = command.join(' ')
   if (!command)
     throw new Error('Unable to run empty running script')
-  const { execa } = await import('execa')
 
   const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
   const commands = command.split('&&').map(cmd => cmd.trim())
