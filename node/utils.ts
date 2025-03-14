@@ -2,7 +2,6 @@ import path from "pathe"
 import fs from "fs"
 import { config } from 'dotenv'
 import { getPackages } from '@manypkg/get-packages';
-import spawn from "cross-spawn";
 import { logger } from "./log";
 
 const root = process.cwd()
@@ -28,6 +27,7 @@ export async function cmd(command: string | string[], env?: Record<string, strin
     command = command.join(' ')
   if (!command)
     throw new Error('Unable to run empty running script')
+  const { execaSync } = await import("execa");
 
   const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
   const commands = command.split('&&').map(cmd => cmd.trim())
@@ -35,7 +35,7 @@ export async function cmd(command: string | string[], env?: Record<string, strin
     if (process.platform.startsWith('win') && command.includes('.sh') && !command.startsWith('sh ')) {
       command = 'sh ' + command
     }
-    spawn.sync(command, options)
+    execaSync(command, options)
   }
 
 }
