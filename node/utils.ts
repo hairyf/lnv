@@ -27,7 +27,7 @@ export async function cmd(command: string | string[], env?: Record<string, strin
     command = command.join(' ')
   if (!command)
     throw new Error('Unable to run empty running script')
-  const { execaSync } = await import("execa");
+  const { parseCommandString, execa } = await import("execa");
 
   const options: any = { stdio: 'inherit', env: { ...process.env, ...env } }
   const commands = command.split('&&').map(cmd => cmd.trim())
@@ -35,10 +35,12 @@ export async function cmd(command: string | string[], env?: Record<string, strin
     if (process.platform.startsWith('win') && command.includes('.sh') && !command.startsWith('sh ')) {
       command = 'sh ' + command
     }
-    execaSync(command, options)
+    const cmds = parseCommandString(command)
+    await execa(options)`${cmds}`
   }
 
 }
+
 export function load(file: string) {
   file = '.' + file
   const filepath = find(file)

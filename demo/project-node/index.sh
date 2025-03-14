@@ -1,0 +1,1 @@
+echo "Hello from project-node shell script!"
