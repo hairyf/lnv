@@ -1,2 +1,42 @@
 packages:
-  - 'demo/**'
+  - playground
+  - docs
+  - packages/*
+  - examples/*
+  - test/*
+catalog:
+  '@types/react': 18.2.47
+  '@types/react-dom': ^18.2.18
+  next: latest
+  react: ^18.2.0
+  react-dom: ^18.2.0
+catalogs:
+  cli:
+    '@antfu/eslint-config': ^4.10.1
+    '@antfu/ni': ^24.1.0
+    '@types/yargs': ^17.0.32
+    bumpp: ^10.1.0
+    dotenv: ^16.4.7
+    dotenv-expand: ^12.0.1
+    eslint: ^9.22.0
+    lint-staged: ^15.5.0
+    nano-spawn: ^0.2.0
+    simple-git-hooks: ^2.11.1
+    tsup: ^0.0.0
+    tsx: ^4.19.3
+    typescript: ^5.8.2
+    vite: ^6.2.1
+    yargs: ^17.7.2
+  inlined:
+    '@antfu/utils': ^9.1.0
+  testing:
+    vitest: ^3.0.8
+    vitest-package-exports: ^0.1.1
+    yaml: ^2.7.0
+  types:
+    '@types/node': ^22.13.10
+  utils:
+    tinyexec: ^0.3.2
+onlyBuiltDependencies:
+  - esbuild
+  - simple-git-hooks

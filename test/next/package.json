@@ -1,0 +1,21 @@
+{
+  "name": "project-next",
+  "private": true,
+  "scripts": {
+    "dev": "lnv -d -- next dev --turbopack",
+    "build": "lnv test -- next build",
+    "start": "lnv test -- next start"
+  },
+  "dependencies": {
+    "@hairy/lnv": "workspace:^",
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:types",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:cli"
+  }
+}

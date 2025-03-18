@@ -1,18 +1,16 @@
 {
   "compilerOptions": {
-    "incremental": true,
-    "target": "ES2021",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "baseUrl": "./",
-    "module": "commonjs",
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
-    "declaration": true,
-    "outDir": "./dist",
-    "removeComments": true,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noEmit": true,
     "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "skipDefaultLibCheck": true,
     "skipLibCheck": true
   }
 }

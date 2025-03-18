@@ -1,19 +1,29 @@
 import { defineConfig } from 'tsup'
 import pkg from './package.json'
 
-export default defineConfig((options) => {
+export default defineConfig((_options) => {
   return {
-    entry: [
-      'node/index.ts',
-    ],
-    // https://tsup.egoist.dev/#code-splitting
-    // Code splitting currently only works with the esm output format, and it's enabled by default. If you want code splitting for cjs output format as well, try using --splitting flag which is an experimental feature to get rid of the limitation in esbuild.
-    // splitting: true,
+    entry: ['./src'],
     clean: true,
-    format: ['cjs'],
-    minify: !options.watch,
-    external: [
-      ...Object.keys(pkg.dependencies || {}),
-    ],
+    dts: true,
+    format: ['esm'],
+    // minify: !options.watch,
+    external: Object.keys(pkg.dependencies || {}),
+
+    /**
+     * @see https://tsup.egoist.dev/#inject-cjs-and-esm-shims
+     * shim for __filename
+     */
+    shims: true,
+    /**
+     * @see https://github.com/egoist/tsup/discussions/505
+     */
+    banner: ({ format }) => {
+      if (format === 'esm') {
+        return {
+          js: `import {createRequire as __createRequire} from 'module';var require=__createRequire(import\.meta.url);`,
+        }
+      }
+    },
   }
 })
