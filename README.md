@@ -65,7 +65,7 @@ If you want to load the environment from the [dotenv](https://www.dotenvx.com/) 
 echo "DOTENV_KEY=dotenv://:key_1234…vault?environment=production" > .env.key
 
 # load dotenv-vault remote environment
-npx lnv dotenv -- <command with arguments>
+npx lnv vault -- <command with arguments>
 ```
 
 If you need to deploy on `vercel`, you must set the corresponding environment `key` using `npx vercel@latest env add DOTENV_KEY`.
