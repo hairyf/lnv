@@ -46,7 +46,7 @@ You can also include any run parameters, for example:
 lnv prod -- next dev --turbopack
 ```
 
-## 🔍 Default Environment Variables
+## 🌿 Default Environment Variables
 
 You can include default environment variables using the `--default|-d` parameter:
 
@@ -113,6 +113,22 @@ You can manual load environment variables with the `-v|--value` parameter:
 
 ```sh
 lnv -v KEY1=VALUE1 -v KEY2=VALUE2 -- node index.js
+```
+
+## 🔍️ Options
+
+```sh
+lnv <entry> [args]
+
+args:
+      --version       show version                                               [boolean]
+  -v, --value         set environment variables                                  [array]
+  -e, --entry         Explicit loading of entry, same as lnv <entry>             [string]
+      --vault, --vlt  load environment variables from vault                      [string]
+  -c, --cmd           load runtime environment and run any scripts               [string]
+      --expose        expose environment variables                               [boolean]
+  -d, --default       the default environment (env|env.local) be loaded          [boolean]
+  -h, --help          show help                                                  [boolean]
 ```
 
 ## 📄 License
