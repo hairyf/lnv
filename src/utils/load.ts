@@ -7,17 +7,20 @@ import { expand } from 'dotenv-expand'
 
 const root = process.cwd()
 
-export function load(file: string): DotenvConfigOutput | undefined {
-  file = `.${file}`
+export function load(mode: string): DotenvConfigOutput | undefined {
+  mode = `.${mode}`
+  const [file, env] = mode.split(':')
   const filepath = find(file)
 
   if (!filepath)
     return undefined
 
-  if (file !== '.env.vault')
+  if (file.startsWith('.env.vault'))
     return expand(config({ path: filepath }))
 
-  const DOTENV_KEY = dokey('.env.key') || process.env.DOTENV_KEY || dokey('.env')
+  const DOTENV_KEY = dokey('.env.key', env) || env
+    ? process.env[`DOTENV_KEY_${env.toUpperCase()}`]
+    : process.env.DOTENV_KEY || dokey('.env')
 
   if (!DOTENV_KEY)
     throw new Error('No DOTENV_KEY found in .env|.env.key or process.env')

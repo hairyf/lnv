@@ -20,7 +20,7 @@ _description_
 [npm-downloads-href]: https://npmjs.com/package/@hairy/lnv
 [bundle-src]: https://img.shields.io/bundlephobia/minzip/@hairy/lnv?style=flat&colorA=080f12&colorB=1fa669&label=minzip
 [bundle-href]: https://bundlephobia.com/result?p=@hairy/lnv
-[license-src]: https://img.shields.io/github/license/hairyf/@hairy/lnv.svg?style=flat&colorA=080f12&colorB=1fa669
-[license-href]: https://github.com/hairyf/@hairy/lnv/blob/main/LICENSE
+[license-src]: https://img.shields.io/github/license/hairyf/lnv.svg?style=flat&colorA=080f12&colorB=1fa669
+[license-href]: https://github.com/hairyf/lnv/blob/main/LICENSE.md
 [jsdocs-src]: https://img.shields.io/badge/jsdocs-reference-080f12?style=flat&colorA=080f12&colorB=1fa669
 [jsdocs-href]: https://www.jsdocs.io/package/@hairy/lnv

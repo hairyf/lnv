@@ -1,14 +1,15 @@
 import path from 'node:path'
-import { x } from 'tinyexec'
+import spawn from 'nano-spawn'
 import { describe, expect, it } from 'vitest'
 
 describe('option for value', () => {
   it('manual loaded environment', async () => {
-    const { stdout } = await x('lnv', [
+    const { stdout } = await spawn('lnv', [
       '-v',
       'TEST_VAR=123',
       '-c',
-      path.join(__dirname, 'index.sh'),
+      'node',
+      path.join(__dirname, 'index.js'),
     ])
     expect(stdout).toContain('TEST_VAR:123')
   })

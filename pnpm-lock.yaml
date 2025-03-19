@@ -85,10 +85,6 @@ catalogs:
     '@types/node':
       specifier: ^22.13.10
       version: 22.13.10
-  utils:
-    tinyexec:
-      specifier: ^0.3.2
-      version: 0.3.2
 
 importers:
 
@@ -137,9 +133,6 @@ importers:
       simple-git-hooks:
         specifier: catalog:cli
         version: 2.11.1
-      tinyexec:
-        specifier: catalog:utils
-        version: 0.3.2
       tsup:
         specifier: catalog:cli
         version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(tsx@4.19.3)(typescript@5.8.2)(yaml@2.7.0)
@@ -162,11 +155,11 @@ importers:
         specifier: catalog:testing
         version: 2.7.0
 
-  test/next:
+  test/modules/next:
     dependencies:
       '@hairy/lnv':
         specifier: workspace:^
-        version: link:../..
+        version: link:../../..
       next:
         specifier: 'catalog:'
         version: 15.2.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)

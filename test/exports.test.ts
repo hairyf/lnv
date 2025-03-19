@@ -1,14 +1,14 @@
-import { x } from 'tinyexec'
+import spawn from 'nano-spawn'
 import { describe, expect, it } from 'vitest'
 import { getPackageExportsManifest } from 'vitest-package-exports'
 import yaml from 'yaml'
 
 // TODO: remove this when you are ready for the first release
-const IS_READY = false
+const IS_READY = true
 
 describe.runIf(IS_READY)('exports-snapshot', async () => {
   const packages: { name: string, path: string, private?: boolean }[] = JSON.parse(
-    await x('pnpm', ['ls', '--only-projects', '-r', '--json']).then(r => r.stdout),
+    await spawn('pnpm', ['ls', '--only-projects', '-r', '--json']).then(r => r.stdout),
   )
 
   for (const pkg of packages) {

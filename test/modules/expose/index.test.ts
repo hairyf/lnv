@@ -4,12 +4,11 @@ import { describe, expect, it } from 'vitest'
 
 describe('option for expose', () => {
   it('expose env', async () => {
-    await spawn('lnv', [
-      '-d',
-      '-v',
-      'TEST_VAR=123',
-      '-e',
-    ], { cwd: __dirname })
+    await spawn(
+      'lnv',
+      ['-d', '-v', 'TEST_VAR=123', '-e'],
+      { cwd: __dirname },
+    )
 
     const stats = await fs.stat(`${__dirname}/.env`)
     expect(stats.isFile()).toBe(true)

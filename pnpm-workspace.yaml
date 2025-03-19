@@ -3,7 +3,7 @@ packages:
   - docs
   - packages/*
   - examples/*
-  - test/*
+  - test/**/*
 catalog:
   '@types/react': 18.2.47
   '@types/react-dom': ^18.2.18
@@ -35,8 +35,6 @@ catalogs:
     yaml: ^2.7.0
   types:
     '@types/node': ^22.13.10
-  utils:
-    tinyexec: ^0.3.2
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks

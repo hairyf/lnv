@@ -56,7 +56,6 @@
     "eslint": "catalog:cli",
     "lint-staged": "catalog:cli",
     "simple-git-hooks": "catalog:cli",
-    "tinyexec": "catalog:utils",
     "tsup": "catalog:cli",
     "tsx": "catalog:cli",
     "typescript": "catalog:cli",
