@@ -7,7 +7,8 @@ export interface ArgvParsed {
   value?: string[]
   entry?: string[]
   default?: boolean
-  exp?: boolean
+  vault?: string
+  expose?: boolean
   cmd?: string
 }
 
@@ -15,22 +16,27 @@ export async function registerCommand(cli: Argv): Promise<void> {
   const args = cli.usage('lnv <entry> [args]')
     .alias('h', 'help')
     .option('value', {
+      describe: 'set environment variables',
       type: 'array',
       alias: 'v',
-      describe: 'set environment variables',
     })
     .option('entry', {
       describe: 'Manual selection entry',
       type: 'array',
+      alias: 'e',
+    })
+    .option('vault', {
+      describe: 'load environment variables from vault',
+      type: 'string',
+      alias: 'vlt',
     })
     .option('cmd', {
       describe: 'load runtime environment and run any scripts',
       type: 'string',
       alias: 'c',
     })
-    .option('exp', {
+    .option('expose', {
       describe: 'expose environment variables',
-      alias: 'e',
       type: 'boolean',
     })
     .option('default', {
@@ -40,6 +46,14 @@ export async function registerCommand(cli: Argv): Promise<void> {
     })
     .help()
     .parse() as ArgvParsed
+
+  const entry = [...(args._ || []), ...(args.entry || [])]
+
+  if (typeof args.vault !== 'undefined') {
+    args.vault !== ''
+      ? entry.unshift(`vault:${args.vault}`)
+      : entry.unshift('vault')
+  }
 
   const values = args.value?.reduce(
     (acc, cur) => {
@@ -51,10 +65,10 @@ export async function registerCommand(cli: Argv): Promise<void> {
   )
 
   await lnv({
-    cmd: args.cmd,
     default: args.default,
-    entry: args._,
-    exp: args.exp,
+    exp: args.expose,
+    cmd: args.cmd,
+    entry,
     values,
   })
 }

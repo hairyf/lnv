@@ -92,9 +92,9 @@ Finally, you can use the `lnv` command to include vault environment variables:
 
 ```sh
 # Load environment variables based on .env.vault and .env.key
-lnv vault -- node index.js
+lnv --vlt -- node index.js
 # Load ci environment variables based on .env.vault and .env.keys
-lnv vault:ci -- node index.js
+lnv --vlt ci -- node index.js
 ```
 
 ## 🚢 Vercel with Vault
