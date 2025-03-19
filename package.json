@@ -26,6 +26,7 @@
     "@hairy/lnv": "./bin/index.js"
   },
   "files": [
+    "bin",
     "dist"
   ],
   "scripts": {

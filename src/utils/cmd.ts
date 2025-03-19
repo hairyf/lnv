@@ -18,7 +18,7 @@ export async function cmd(command: string | string[], env?: Record<string, strin
   }
   const commands = command.split('&&').map(cmd => cmd.trim())
   for (let command of commands) {
-    if (process.platform.startsWith('win') && command.includes('.sh') && !command.startsWith('sh ')) {
+    if (command.includes('.sh') && !command.startsWith('sh ')) {
       command = `sh ${command}`
     }
     const [cmd, ...args] = parseCommandString(command)

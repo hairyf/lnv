@@ -15,12 +15,14 @@ export function load(mode: string): DotenvConfigOutput | undefined {
   if (!filepath)
     return undefined
 
-  if (file.startsWith('.env.vault'))
+  if (!file.startsWith('.env.vault'))
     return expand(config({ path: filepath }))
 
-  const DOTENV_KEY = dokey('.env.key', env) || env
+  const DOTENV_KEY = (env
+    ? dokey('.env.keys', env)
+    : dokey('.env.key')) || (env
     ? process.env[`DOTENV_KEY_${env.toUpperCase()}`]
-    : process.env.DOTENV_KEY || dokey('.env')
+    : process.env.DOTENV_KEY)
 
   if (!DOTENV_KEY)
     throw new Error('No DOTENV_KEY found in .env|.env.key or process.env')
