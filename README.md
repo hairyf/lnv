@@ -1,4 +1,4 @@
-# @hairy/lnv 🚀
+# @hairy/lnv
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -6,7 +6,7 @@
 [![JSDocs][jsdocs-src]][jsdocs-href]
 [![License][license-src]][license-href]
 
-Loading environment variables in Next.js and other frameworks can be quite cumbersome, and using dotenv or vault at runtime is also inconvenient. That's why we created this tool! ✨
+Loading environment variables in Next.js and other frameworks can be quite cumbersome, and using dotenv or vault at runtime is also inconvenient. That's why my created this tool
 
 I think it can solve some of the problems you encounter in next.js or dotenv or more. 🛠️
 
@@ -106,6 +106,14 @@ npx vercel@latest env add DOTENV_KEY
 ```
 
 lnv vault will automatically load environment variables based on .env.vault. 🎉
+
+## ✍️ Manual with environment variables
+
+You can manual load environment variables with the `-v|--value` parameter:
+
+```sh
+lnv -v KEY1=VALUE1 -v KEY2=VALUE2 -- node index.js
+```
 
 ## 📄 License
 
