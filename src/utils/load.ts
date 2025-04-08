@@ -7,12 +7,10 @@ import process from 'node:process'
 import { config } from 'dotenv'
 import { expand } from 'dotenv-expand'
 
-const root = process.cwd()
-
 export function load(mode: string, options: LoadEnvironmentOptions = {}): Record<string, string> | undefined {
   const [name, env] = mode.split(':')
   const file = `.${name}`
-  const filepaths = find(file, options.deep)
+  const filepaths = find(process.cwd(), file, options.deep)
   const parsed: Record<string, string> = {}
   let exist = false
   for (const filepath of filepaths) {
@@ -35,18 +33,18 @@ function loadFile(filepath: string, file: string, env?: string): DotenvConfigOut
     return expand(config({ path: filepath }))
 
   const DOTENV_KEY = (env
-    ? dokey('.env.keys', env)
-    : dokey('.env.key')) || (env
-    ? process.env[`DOTENV_KEY_${env.toUpperCase()}`]
-    : process.env.DOTENV_KEY)
+    ? dokey(path.dirname(filepath), '.env.keys', env)
+    : dokey(path.dirname(filepath), '.env.key'))
+  || (env ? process.env[`DOTENV_KEY_${env.toUpperCase()}`] : process.env.DOTENV_KEY)
 
   if (!DOTENV_KEY)
     throw new Error('No DOTENV_KEY found in .env|.env.key or process.env')
 
+  delete process.env.DOTENV_KEY
   return expand(config({ DOTENV_KEY, path: filepath }))
 }
 
-export function find(file: string, deep = false): string[] {
+export function find(root: string, file: string, deep = false): string[] {
   let currentDir = root
   const files: string[] = []
 
@@ -63,7 +61,7 @@ export function find(file: string, deep = false): string[] {
   return files
 }
 
-export function dokey(file: string, environment?: string): string | undefined {
-  const parsed = expand(config({ processEnv: {}, DOTENV_KEY: undefined, path: find(file) })).parsed
+export function dokey(root: string, file: string, environment?: string): string | undefined {
+  const parsed = expand(config({ processEnv: {}, DOTENV_KEY: undefined, path: find(root, file) })).parsed
   return environment ? parsed?.[`DOTENV_KEY_${environment.toUpperCase()}`] : parsed?.DOTENV_KEY
 }
