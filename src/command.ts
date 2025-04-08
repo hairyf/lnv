@@ -10,6 +10,7 @@ export interface ArgvParsed {
   vault?: string
   expose?: boolean
   cmd?: string
+  overflow?: boolean
 }
 
 export async function registerCommand(cli: Argv): Promise<void> {
@@ -19,6 +20,11 @@ export async function registerCommand(cli: Argv): Promise<void> {
       describe: 'set environment variables',
       type: 'array',
       alias: 'v',
+    })
+    .option('overflow', {
+      describe: 'deep find and merge environment variables',
+      type: 'boolean',
+      alias: 'o',
     })
     .option('entry', {
       describe: 'Manual selection entry',
@@ -68,6 +74,7 @@ export async function registerCommand(cli: Argv): Promise<void> {
     default: args.default,
     exp: args.expose,
     cmd: args.cmd,
+    deep: args.overflow,
     entry,
     values,
   })

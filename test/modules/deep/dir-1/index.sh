@@ -1,0 +1,1 @@
+echo "TEST_VARS:"$TEST_VAR_1 $TEST_VAR_2

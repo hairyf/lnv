@@ -128,6 +128,7 @@ args:
   -c, --cmd           load runtime environment and run any scripts               [string]
       --expose        expose environment variables                               [boolean]
   -d, --default       the default environment (env|env.local) be loaded          [boolean]
+  -o, --overflow      deep find and merge environment variables                  [boolean]
   -h, --help          show help                                                  [boolean]
 ```
 

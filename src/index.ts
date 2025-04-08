@@ -1,41 +1,7 @@
 /* eslint-disable no-console */
+import type { LoadEnvironmentOptions } from './types'
 import process from 'node:process'
 import { cmd, load, m2fi, uniq, write } from './utils'
-
-export interface LoadEnvironmentOptions {
-  /**
-   * set environment variables entry
-   *
-   * @example
-   * // load .env, .env.local
-   * entry: ['env', 'local']
-   */
-  entry?: string[]
-  /**
-   * the default environment (env|...|env.local) be loaded
-   */
-  default?: boolean
-  /**
-   * set environment variables
-   *
-   * @example
-   * // set environment variables
-   * values: {
-   *   NODE_ENV: 'production',
-   *   PORT: '3000'
-   * }
-   */
-  values?: Record<string, string>
-
-  /**
-   * set environment variables to .env file
-   */
-  exp?: boolean
-  /**
-   * command to run
-   */
-  cmd?: string | string[]
-}
 
 export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   if (options.cmd && options.exp)
@@ -52,13 +18,10 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   const parsedFiles: string[] = []
 
   for (const file of files) {
-    const envs = load(file)
-    if (!envs || envs?.error) {
-      if (!(options.default && ['env', 'env.local'].includes(file)))
-        console.log(`Failed to loading ${file} file not found in all scopes`)
+    const envs = load(file, options)
+    if (!envs)
       continue
-    }
-    Object.assign(parsed, envs.parsed)
+    Object.assign(parsed, envs)
     parsedFiles.unshift(file)
   }
 
