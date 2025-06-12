@@ -55,6 +55,15 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
       typeof value !== 'undefined' && (message += `\n  ${key}=${value}`)
   }
 
+  for (const key in parsed) {
+    const value = parsed[key]
+    if (typeof value === 'string' && value.includes('${')) {
+      parsed[key] = value.replace(/\$\{([^}]+)\}/g, (match, envKey) => {
+        return parsed[envKey] !== undefined ? parsed[envKey] : match
+      })
+    }
+  }
+
   if (options.cmd) {
     message && console.log(message)
     console.log()
