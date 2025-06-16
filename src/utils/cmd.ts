@@ -1,7 +1,7 @@
 import type { Options } from 'nano-spawn'
 import process from 'node:process'
 import spawn from 'nano-spawn'
-import { parseCommandString } from './util'
+import { parseCommandString, replaceLiteralQuantity } from './util'
 
 export async function cmd(command: string | string[], env?: Record<string, string>): Promise<void> {
   if (Array.isArray(command))
@@ -20,9 +20,7 @@ export async function cmd(command: string | string[], env?: Record<string, strin
   }
   const commands = command.split('&&').map(cmd => cmd.trim())
   for (let command of commands) {
-    command = command.replace(/\$\{([^}]+)\}/g, (match, key) => {
-      return mergedEnv[key] !== undefined ? mergedEnv[key] : match
-    })
+    command = replaceLiteralQuantity(command, mergedEnv)
 
     if (command.includes('.sh') && !command.startsWith('sh ')) {
       command = `sh ${command}`

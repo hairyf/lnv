@@ -45,3 +45,7 @@ export function parseCommandString(command: string): string[] {
 
   return tokens
 }
+
+export function replaceLiteralQuantity(input: string, parsed: any): string {
+  return input.replace(/\$(\w+)/g, (_, key) => key in parsed ? parsed[key] : `$${key}`)
+}

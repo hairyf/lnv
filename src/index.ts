@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import type { LoadEnvironmentOptions } from './types'
 import process from 'node:process'
-import { cmd, load, m2fi, uniq, write } from './utils'
+import { cmd, load, m2fi, replaceLiteralQuantity, uniq, write } from './utils'
 
 export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   if (options.cmd && options.exp)
@@ -55,14 +55,8 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
       typeof value !== 'undefined' && (message += `\n  ${key}=${value}`)
   }
 
-  for (const key in parsed) {
-    const value = parsed[key]
-    if (typeof value === 'string' && value.includes('${')) {
-      parsed[key] = value.replace(/\$\{([^}]+)\}/g, (match, envKey) => {
-        return parsed[envKey] !== undefined ? parsed[envKey] : match
-      })
-    }
-  }
+  for (const key in parsed)
+    parsed[key] = replaceLiteralQuantity(parsed[key], parsed)
 
   if (options.cmd) {
     message && console.log(message)
