@@ -2,8 +2,8 @@ import path from 'node:path'
 import spawn from 'nano-spawn'
 import { describe, expect, it } from 'vitest'
 
-describe('environment variable brackets replacement', () => {
-  it('replaces {ENV_VAR} with its value', async () => {
+describe('environment variable replacement', () => {
+  it('replaces $ENV_VAR with its value', async () => {
     const { stdout } = await spawn('lnv', [
       '-v',
       'VAR=321',

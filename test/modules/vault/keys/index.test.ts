@@ -5,7 +5,7 @@ describe('option for vault keys', () => {
   it('loaded vault ci environment', async () => {
     const { stdout } = await spawn(
       'lnv',
-      ['--vlt', 'ci', '-c', 'node', '-e', 'console.log(process.env.HELLO)'],
+      ['vault:ci', '-r', 'node', '-e', 'console.log(process.env.HELLO)'],
       { cwd: __dirname },
     )
     expect(stdout).toContain('ci')

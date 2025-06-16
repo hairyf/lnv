@@ -73,7 +73,7 @@ const config = defineConfig({
             label: 'project-2',
           },
         ],
-      }
+      },
     },
   },
 })

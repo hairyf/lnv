@@ -2,11 +2,11 @@ import fs from 'node:fs/promises'
 import spawn from 'nano-spawn'
 import { describe, expect, it } from 'vitest'
 
-describe('option for expose', () => {
-  it('expose env', async () => {
+describe('option for write', () => {
+  it('write env', async () => {
     await spawn(
       'lnv',
-      ['-d', '-v', 'TEST_VAR=123', '-e'],
+      ['-d', '-v', 'TEST_VAR=123', '--write'],
       { cwd: __dirname },
     )
 

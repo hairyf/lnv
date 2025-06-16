@@ -2,7 +2,7 @@
   "name": "project-next",
   "private": true,
   "scripts": {
-    "dev": "lnv -d -- next dev --turbopack",
+    "dev": "lnv -- next dev --turbopack",
     "build": "lnv test -- next build",
     "start": "lnv test -- next start"
   },

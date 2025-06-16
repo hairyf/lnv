@@ -7,7 +7,7 @@ describe('option for value', () => {
     const { stdout } = await spawn('lnv', [
       '-v',
       'TEST_VAR=123',
-      '-c',
+      '-r',
       'node',
       path.join(__dirname, 'index.js'),
     ])
