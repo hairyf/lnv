@@ -164,11 +164,17 @@ const config = defineConfig({
       DATABASE_URL: '$DB_TYPE://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME',
     },
   },
-  /**
-   * LNV scripts configuration
-   */
+})
+
+export default config
+```
+
+The 'scripts' field is used to define operable command-line scripts, which can be understood as scripts in `package.json`, but with more powerful capabilities.
+
+```ts
+const config = defineConfig({
   scripts: {
-    // npm run lnv deploy
+    // command: npm run lnv deploy
     deploy: {
       message: 'Deploy the application',
       prompts: [
@@ -194,7 +200,7 @@ const config = defineConfig({
       ],
       command: 'hardhat --build-profile production ignition deploy $modulePath --network $network',
     },
-    // npm run lnv dev
+    // command: npm run lnv dev
     dev: {
       message: 'Run the development server',
       command: {
