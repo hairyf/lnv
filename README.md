@@ -49,19 +49,22 @@ lnv prod -- next dev --turbopack
 
 ## 🌿 Default Environment Variables
 
-You can include default environment variables using the `--default|-d` parameter:
-
-```sh
-# Will include .env.local and .env environment variables
-lnv -d -- node index.js
-# Equivalent to
-lnv local env -- node index.js
-```
+You don't need any action, the `.env.local` and `.env` environment variables will be automatically loaded by default.
 
 ## 🔒 Vault Environment Variables
 
-Before loading variables from vault, you need to connect to the vault environment variable repository in your project:
+<details>
 
+<summary>Before loading variables from vault, you need to connect to the vault environment variable repository in your project</summary><br>
+
+```sh
+npx dotenv-vault@latest new
+npx dotenv-vault@latest vlt_...
+```
+
+```sh
+npx dotenv-vault@latest pull
+npx dotenv-vault@latest build
 ```sh
 # Create and connect to vault repository
 npx dotenv-vault@latest new
@@ -98,6 +101,8 @@ lnv vault -- node index.js
 lnv vault:ci -- node index.js
 ```
 
+<br></details>
+
 ## 🚢 Vercel with Vault
 
 If you need to deploy on Vercel, you need to add environment variables in your Vercel project:
@@ -126,7 +131,7 @@ lnv -v KEY1=value1 -- node -e 'console.log($KEY1)'
 
 ## 📝 Define Your integration Config
 
-Define Config ` lnv.config.ts ` is used to add actionable command-line scripts and default injected environment variables.
+`lnv.config.ts ` is used to add actionable command-line scripts and default injected environment variables.
 
 ```ts
 import fs from 'node:fs/promises'
