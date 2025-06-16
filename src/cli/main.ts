@@ -20,7 +20,7 @@ export async function registerMainCommand(cli: Argv): Promise<void> {
       alias: 'v',
     })
     .option('depth', {
-      describe: 'deep find and merge environment variables',
+      describe: 'depth find and merge environment variables',
       type: 'boolean',
       alias: 'd',
     })

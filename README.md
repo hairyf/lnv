@@ -17,6 +17,7 @@ I think it can solve some of the problems you encounter in next.js or dotenv or 
 - 🛡️ Direct writing to process.env, no local storage, more secure and reliable
 - 📁 Environment variables lookup, naturally supports monorepo architecture
 - 🏃‍♂️ Run any JS and scripts with environment variables
+- 📜 Define your integration config with `lnv.config.ts`
 
 ## 📦 Install
 
@@ -92,9 +93,9 @@ Finally, you can use the `lnv` command to include vault environment variables:
 
 ```sh
 # Load environment variables based on .env.vault and .env.key
-lnv --vlt -- node index.js
+lnv vault -- node index.js
 # Load ci environment variables based on .env.vault and .env.keys
-lnv --vlt ci -- node index.js
+lnv vault:ci -- node index.js
 ```
 
 ## 🚢 Vercel with Vault
@@ -112,23 +113,117 @@ lnv vault will automatically load environment variables based on .env.vault. �
 You can manual load environment variables with the `-v|--value` parameter:
 
 ```sh
-lnv -v KEY1=VALUE1 -v KEY2=VALUE2 -- node index.js
+lnv -v KEY1=value1 -v KEY2=value2 -- node index.js
+```
+
+By adding the $prefix, you can reference the value of an environment variable in the settings or command line:
+
+```sh
+lnv -v KEY1=value1 -v KEY2=value1 -v KEY3=$KEY1_$KEY2 -- node index.js
+## or
+lnv -v KEY1=value1 -- node -e 'console.log($KEY1)'
+```
+
+## 📝 Define Your integration Config
+
+Define Config ` lnv.config.ts ` is used to add actionable command-line scripts and default injected environment variables.
+
+```ts
+import fs from 'node:fs/promises'
+import { defineConfig } from '@hairy/lnv'
+
+const config = defineConfig({
+  /**
+   * Environment variable injection, applied to all LNV scripts
+   */
+  injects: {
+    /**
+     * Inject before reading environment variables
+     */
+    before: {
+      DB_TYPE: 'mysql',
+      DB_HOST: 'localhost',
+      DB_PORT: '3306',
+      DB_USER: 'root',
+    },
+
+    /**
+     * Default loaded environment variable entries
+     */
+    entries: ['local', 'vault', 'remote'],
+
+    /**
+     * Inject after reading environment variables
+     */
+    after: {
+      DATABASE_URL: '$DB_TYPE://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME',
+    },
+  },
+  /**
+   * LNV scripts configuration
+   */
+  scripts: {
+    // npm run lnv deploy
+    deploy: {
+      message: 'Deploy the application',
+      prompts: [
+        {
+          key: 'network',
+          message: 'Select Your Network',
+          options: [
+            { value: 'moonchain', label: 'Moonchain' },
+            { value: 'moonchainGeneva', label: 'Moonchain Geneva' },
+          ],
+        },
+        {
+          key: 'modulePath',
+          message: 'Select the module you want to deploy',
+          options: async () => {
+            const files = await fs.readdir('./ignition/modules')
+            return files.map(file => ({
+              value: `./ignition/modules/${file}`,
+              label: file.replace('.ts', ''),
+            }))
+          },
+        },
+      ],
+      command: 'hardhat --build-profile production ignition deploy $modulePath --network $network',
+    },
+    // npm run lnv dev
+    dev: {
+      message: 'Run the development server',
+      command: {
+        message: 'Select the project you want to run',
+        options: [
+          {
+            value: 'cd packages/project-1 && npm run dev',
+            label: 'project-1',
+          },
+          {
+            value: 'cd packages/project-2 && npm run dev',
+            label: 'project-2',
+          },
+        ],
+      },
+    },
+  },
+})
+
+export default config
 ```
 
 ## 🔍️ Options
 
 ```sh
-lnv <entry> [args]
+lnv <entry|script> [args]
 
 args:
       --version       show version                                               [boolean]
   -v, --value         set environment variables                                  [array]
   -e, --entry         Explicit loading of entry, same as lnv <entry>             [string]
-      --vault, --vlt  load environment variables from vault                      [string]
-  -c, --cmd           load runtime environment and run any scripts               [string]
-      --expose        expose environment variables                               [boolean]
-  -d, --default       the default environment (env|env.local) be loaded          [boolean]
-  -o, --overflow      deep find and merge environment variables                  [boolean]
+  -r, --run           load runtime environment and run any scripts               [string]
+      --write         expose and write environment variables                     [boolean]
+  -d, --depth         depth find and merge environment variables                 [boolean]
   -h, --help          show help                                                  [boolean]
 ```
 
