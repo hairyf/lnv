@@ -1,19 +1,17 @@
 import type { Argv } from 'yargs'
-import { lnv } from '.'
+import { lnv } from '..'
 
 export interface ArgvParsed {
   _?: string[]
   $0: string
   value?: string[]
   entry?: string[]
-  default?: boolean
-  vault?: string
-  expose?: boolean
-  cmd?: string
-  overflow?: boolean
+  write?: boolean
+  depth?: boolean
+  run?: string
 }
 
-export async function registerCommand(cli: Argv): Promise<void> {
+export async function registerMainCommand(cli: Argv): Promise<void> {
   const args = cli.usage('lnv <entry> [args]')
     .alias('h', 'help')
     .option('value', {
@@ -21,45 +19,29 @@ export async function registerCommand(cli: Argv): Promise<void> {
       type: 'array',
       alias: 'v',
     })
-    .option('overflow', {
+    .option('depth', {
       describe: 'deep find and merge environment variables',
       type: 'boolean',
-      alias: 'o',
+      alias: 'd',
     })
     .option('entry', {
       describe: 'Manual selection entry',
       type: 'array',
       alias: 'e',
     })
-    .option('vault', {
-      describe: 'load environment variables from vault',
-      type: 'string',
-      alias: 'vlt',
-    })
-    .option('cmd', {
+    .option('run', {
       describe: 'load runtime environment and run any scripts',
       type: 'string',
-      alias: 'c',
+      alias: 'r',
     })
-    .option('expose', {
-      describe: 'expose environment variables',
-      type: 'boolean',
-    })
-    .option('default', {
-      describe: 'the default environment (env|...|env.local) be loaded',
-      alias: 'd',
+    .option('write', {
+      describe: 'expose and write environment variables to .env file',
       type: 'boolean',
     })
     .help()
     .parse() as ArgvParsed
 
   const entry = [...(args._ || []), ...(args.entry || [])]
-
-  if (typeof args.vault !== 'undefined') {
-    args.vault !== ''
-      ? entry.unshift(`vault:${args.vault}`)
-      : entry.unshift('vault')
-  }
 
   const values = args.value?.reduce(
     (acc, cur) => {
@@ -71,10 +53,10 @@ export async function registerCommand(cli: Argv): Promise<void> {
   )
 
   await lnv({
-    default: args.default,
-    exp: args.expose,
-    cmd: args.cmd,
-    deep: args.overflow,
+    default: true,
+    write: args.write,
+    run: args.run,
+    depth: args.depth,
     entry,
     values,
   })

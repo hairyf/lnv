@@ -9,7 +9,7 @@ describe('environment variable brackets replacement', () => {
       'VAR=321',
       '-v',
       'TEST_VAR=$VAR',
-      '-c',
+      '-r',
       'node',
       path.join(__dirname, 'index.js'),
     ])
@@ -20,7 +20,7 @@ describe('environment variable brackets replacement', () => {
       'VAR=321',
       '-v',
       'TEST_VAR=$VAR',
-      '-c',
+      '-r',
       'echo TEST_VAR_$TEST_VAR',
     ])
     expect(stdout2).toContain('TEST_VAR_321')

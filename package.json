@@ -41,9 +41,12 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
+    "@clack/prompts": "catalog:",
+    "consola": "catalog:",
     "dotenv": "catalog:cli",
     "dotenv-expand": "catalog:cli",
     "nano-spawn": "catalog:cli",
+    "unconfig": "catalog:",
     "yargs": "catalog:cli"
   },
   "devDependencies": {

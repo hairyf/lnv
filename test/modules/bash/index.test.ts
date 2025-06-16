@@ -7,7 +7,7 @@ describe('option for value', () => {
     const { stdout } = await spawn('lnv', [
       '-v',
       'TEST_VAR=123',
-      '-c',
+      '-r',
       path.join(__dirname, 'index.sh'),
     ])
     expect(stdout).toContain('TEST_VAR:123')

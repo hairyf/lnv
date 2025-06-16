@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import type { DotenvConfigOutput } from 'dotenv'
-import type { LoadEnvironmentOptions } from '../types'
+import type { LoadEnvironmentOptions } from './types'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -10,7 +10,7 @@ import { expand } from 'dotenv-expand'
 export function load(mode: string, options: LoadEnvironmentOptions = {}): Record<string, string> | undefined {
   const [name, env] = mode.split(':')
   const file = `.${name}`
-  const filepaths = find(process.cwd(), file, options.deep)
+  const filepaths = find(process.cwd(), file, options.depth)
   const parsed: Record<string, string> = {}
   let exist = false
   for (const filepath of filepaths) {

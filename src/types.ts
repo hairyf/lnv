@@ -26,14 +26,14 @@ export interface LoadEnvironmentOptions {
   /**
    * set environment variables to .env file
    */
-  exp?: boolean
+  write?: boolean
   /**
    * command to run
    */
-  cmd?: string | string[]
+  run?: string | string[]
 
   /**
    * deep load and merge environment variables
    */
-  deep?: boolean
+  depth?: boolean
 }

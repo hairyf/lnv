@@ -1,9 +1,9 @@
 import type { Options } from 'nano-spawn'
 import process from 'node:process'
 import spawn from 'nano-spawn'
-import { parseCommandString, replaceLiteralQuantity } from './util'
+import { parseCommandString, replaceLiteralQuantity } from './utils'
 
-export async function cmd(command: string | string[], env?: Record<string, string>): Promise<void> {
+export async function run(command: string | string[], env?: Record<string, string>): Promise<void> {
   if (Array.isArray(command))
     command = command.join(' ')
   if (!command)
