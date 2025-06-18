@@ -1,7 +1,7 @@
 {
   "name": "@hairy/lnv",
   "type": "module",
-  "version": "7.0.0",
+  "version": "7.1.0",
   "packageManager": "pnpm@10.6.5",
   "description": "_description_",
   "author": "Hairyf <wwu710632@gmail.com>",
