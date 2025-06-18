@@ -43,7 +43,7 @@ export async function registerMainCommand(cli: Argv): Promise<void> {
 
   const entry = [...(args._ || []), ...(args.entry || [])]
 
-  const values = args.value?.reduce(
+  const env = args.value?.reduce(
     (acc, cur) => {
       const [key, value] = cur.split('=')
       acc[key] = value
@@ -58,6 +58,6 @@ export async function registerMainCommand(cli: Argv): Promise<void> {
     run: args.run,
     depth: args.depth,
     entry,
-    values,
+    env,
   })
 }

@@ -21,12 +21,13 @@ export interface LoadEnvironmentOptions {
    *   PORT: '3000'
    * }
    */
-  values?: Record<string, string>
+  env?: Record<string, string>
 
   /**
    * set environment variables to .env file
    */
   write?: boolean
+
   /**
    * command to run
    */

@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises'
 import { defineConfig } from '@hairy/lnv'
 
 const config = defineConfig({
@@ -11,15 +10,15 @@ const config = defineConfig({
      */
     before: {
       DB_TYPE: 'mysql',
+      DB_USER: 'root',
       DB_HOST: 'localhost',
       DB_PORT: '3306',
-      DB_USER: 'root',
     },
 
     /**
      * Default loaded environment variable entries
      */
-    entries: ['local', 'vault', 'remote'],
+    entries: ['local', 'vault', 'env'],
 
     /**
      * Inject after reading environment variables
@@ -28,50 +27,26 @@ const config = defineConfig({
       DATABASE_URL: '$DB_TYPE://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME',
     },
   },
-  /**
-   * LNV scripts configuration
-   */
   scripts: {
-    // pnpm run lnv deploy
-    deploy: {
-      message: 'Deploy the application',
-      prompts: [
-        {
-          key: 'network',
-          message: 'Select Your Network',
-          options: [
-            { value: 'moonchain', label: 'Moonchain' },
-            { value: 'moonchainGeneva', label: 'Moonchain Geneva' },
-          ],
-        },
-        {
-          key: 'modulePath',
-          message: 'Select the module you want to deploy',
-          options: async () => {
-            const files = await fs.readdir('./ignition/modules')
-            return files.map(file => ({
-              value: `./ignition/modules/${file}`,
-              label: file.replace('.ts', ''),
-            }))
-          },
-        },
-      ],
-      command: 'hardhat --build-profile production ignition deploy $modulePath --network $network',
-    },
-    // pnpm run lnv dev
-    dev: {
-      message: 'Run the development server',
+    'prisma': {
+      message: 'Running Prisma command',
       options: [
-        {
-          value: 'cd packages/project-1 && npm run dev',
-          label: 'project-1',
-        },
-        {
-          value: 'cd packages/project-2 && npm run dev',
-          label: 'project-2',
-        },
+        { value: 'validate', label: 'Validate schema (prisma validate)' },
+        { value: 'generate', label: 'Generate Prisma client (prisma generate)' },
+        { value: 'migrate', label: 'Run migrations (prisma migrate dev)' },
+        { value: 'format', label: 'Format schema (prisma format)' },
+        { value: 'studio', label: 'Open Prisma Studio (prisma studio)' },
+        { value: 'db:push', label: 'Push schema to database (prisma db push)' },
+        { value: 'db:pull', label: 'Pull schema from database (prisma db pull)' },
       ],
     },
+    'prisma:validate': 'prisma validate',
+    'prisma:generate': 'prisma generate',
+    'prisma:migrate': 'prisma migrate dev',
+    'prisma:format': 'prisma format',
+    'prisma:studio': 'prisma studio',
+    'prisma:db:push': 'prisma db push',
+    'prisma:db:pull': 'prisma db pull',
   },
 })
 

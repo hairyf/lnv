@@ -1,3 +1,4 @@
+/* eslint-disable ts/explicit-function-return-type */
 /* eslint-disable no-console */
 
 import type { Prompt, Script, ScriptCommand, ScriptSelectCommand, UserConfig } from './config'
@@ -14,6 +15,7 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   const { config = {} } = await loadConfig<UserConfig>({
     sources: [{ files: 'lnv.config' }],
     cwd: process.cwd(),
+    merge: true,
   })
 
   const scriptName = options.entry?.[0] as string
@@ -22,6 +24,10 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
 
   if (config.injects?.entries)
     entry.unshift(...config.injects.entries)
+  if (config.injects?.depth)
+    options.depth = config.injects.depth
+  if (config.injects?.env)
+    options.env = Object.assign(options.env || {}, config.injects.env)
 
   if (options.default) {
     entry.push('env')
@@ -40,13 +46,16 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
     parsedFiles.unshift(file)
   }
 
-  options.values && Object.assign(parsed, options.values)
+  options.env && Object.assign(parsed, options.env)
   config.injects?.after && Object.assign(parsed, config.injects.after)
 
   if (script) {
     const parsedScript = await assembleScript(script)
+    parsedScript.env && Object.assign(parsed, parsedScript.env)
     Object.assign(parsed, parsedScript.parsed)
     options.run = parsedScript.run
+    if (parsedScript.depth)
+      options.depth = parsedScript.depth
   }
 
   for (const key in parsed)
@@ -67,7 +76,7 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   }
 }
 
-async function assembleScript(script: Script | string): Promise<{ run: string, parsed: Record<string, string> }> {
+async function assembleScript(script: Script | string) {
   if (typeof script === 'string') {
     return { run: script, parsed: {} }
   }
@@ -75,6 +84,8 @@ async function assembleScript(script: Script | string): Promise<{ run: string, p
     prompts = [],
     command: run,
     message,
+    depth,
+    env,
     ...selectOptions
   } = script as ScriptCommand & ScriptSelectCommand
 
@@ -88,12 +99,12 @@ async function assembleScript(script: Script | string): Promise<{ run: string, p
       outro('Operation cancelled')
       process.exit(0)
     }
-    return { run: value, parsed: {} }
+    return { run: value, parsed: {}, depth, env }
   }
   else {
     intro(message)
     const parsed = await collectPrompts(prompts)
-    return { run, parsed }
+    return { run, parsed, depth, env }
   }
 }
 
@@ -123,7 +134,7 @@ function assembleMessage(
   options: LoadEnvironmentOptions,
 ): string {
   const foundParsed = !Object.keys(parsed).length
-  const foundManual = !Object.keys(options.values || {}).length
+  const foundManual = !Object.keys(options.env || {}).length
   const foundFiles = !parsedFiles.length
 
   if (foundParsed && foundFiles && foundManual)
@@ -145,8 +156,8 @@ function assembleMessage(
   else if (!foundManual)
     message = 'Successfully manual loaded environment variables'
 
-  if (options.values) {
-    for (const [key, value] of Object.entries(options.values))
+  if (options.env) {
+    for (const [key, value] of Object.entries(options.env))
       typeof value !== 'undefined' && (message += `\n  ${key}=${value}`)
   }
 
