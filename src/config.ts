@@ -18,7 +18,7 @@ export interface UserConfig {
     before?: { [key: string]: string }
     after?: { [key: string]: string }
   }
-  scripts?: { [command: string]: Script }
+  scripts?: { [command: string]: Script | string }
 }
 
 export function defineConfig(config: UserConfig): UserConfig {

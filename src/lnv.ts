@@ -17,7 +17,7 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   })
 
   const scriptName = options.entry?.[0] as string
-  const script = config.scripts?.[scriptName] as Script
+  const script = config.scripts?.[scriptName] as Script | string | undefined
   const entry = script ? [] : (options.entry || [])
 
   if (config.injects?.entries)
@@ -43,7 +43,10 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   options.values && Object.assign(parsed, options.values)
   config.injects?.after && Object.assign(parsed, config.injects.after)
 
-  if (script) {
+  if (typeof script === 'string') {
+    options.run = script
+  }
+  else if (typeof script === 'object') {
     const { prompts = [], command, message } = script
 
     message && intro(message)
