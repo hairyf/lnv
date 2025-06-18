@@ -89,7 +89,7 @@ async function assembleScript(script: Script | string) {
     ...selectOptions
   } = script as ScriptCommand & ScriptSelectCommand
 
-  const isSelectCommand = selectOptions.options.length && !run
+  const isSelectCommand = typeof selectOptions.options !== 'undefined' && !run
   if (isSelectCommand) {
     const value = await select({
       message: message || 'Please select a command',
