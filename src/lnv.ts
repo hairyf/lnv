@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import type { Script, UserConfig } from './config'
+import type { Prompt, Script, ScriptCommand, ScriptSelectCommand, UserConfig } from './config'
 import type { LoadEnvironmentOptions } from './types'
 import process from 'node:process'
 import { intro, isCancel, outro, select } from '@clack/prompts'
@@ -43,41 +43,10 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   options.values && Object.assign(parsed, options.values)
   config.injects?.after && Object.assign(parsed, config.injects.after)
 
-  if (typeof script === 'string') {
-    options.run = script
-  }
-  else if (typeof script === 'object') {
-    const { prompts = [], command, message } = script
-
-    message && intro(message)
-
-    for (const prompt of prompts) {
-      const { key, message, options } = prompt
-      const choices = typeof options === 'function'
-        ? await options()
-        : options
-      const value = await select({
-        message: message || `Please select ${key}`,
-        options: choices,
-      })
-      if (isCancel(value)) {
-        outro('Operation cancelled')
-        process.exit(0)
-      }
-      parsed[key] = value
-    }
-
-    if (typeof command === 'object') {
-      const value = await select(command)
-      if (isCancel(value)) {
-        outro('Operation cancelled')
-        process.exit(0)
-      }
-      options.run = value
-    }
-    else {
-      options.run = command
-    }
+  if (script) {
+    const parsedScript = await assembleScript(script)
+    Object.assign(parsed, parsedScript.parsed)
+    options.run = parsedScript.run
   }
 
   for (const key in parsed)
@@ -96,6 +65,56 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
     console.log()
     message && console.log(message)
   }
+}
+
+async function assembleScript(script: Script | string): Promise<{ run: string, parsed: Record<string, string> }> {
+  if (typeof script === 'string') {
+    return { run: script, parsed: {} }
+  }
+  const {
+    prompts = [],
+    command: run,
+    message,
+    ...selectOptions
+  } = script as ScriptCommand & ScriptSelectCommand
+
+  const isSelectCommand = !selectOptions.options.length && !run
+  if (isSelectCommand) {
+    const value = await select({
+      message: message || 'Please select a command',
+      ...selectOptions,
+    })
+    if (isCancel(value)) {
+      outro('Operation cancelled')
+      process.exit(0)
+    }
+    return { run: value, parsed: {} }
+  }
+  else {
+    intro(message)
+    const parsed = await collectPrompts(prompts)
+    return { run, parsed }
+  }
+}
+
+async function collectPrompts(prompts: Prompt[]): Promise<Record<string, string>> {
+  const parsed: Record<string, string> = {}
+  for (const prompt of prompts) {
+    const { key, message, options } = prompt
+    const choices = typeof options === 'function'
+      ? await options()
+      : options
+    const value = await select({
+      message: message || `Please select ${key}`,
+      options: choices,
+    })
+    if (isCancel(value)) {
+      outro('Operation cancelled')
+      process.exit(0)
+    }
+    parsed[key] = value
+  }
+  return parsed
 }
 
 function assembleMessage(

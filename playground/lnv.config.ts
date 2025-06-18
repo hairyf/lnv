@@ -61,19 +61,16 @@ const config = defineConfig({
     // pnpm run lnv dev
     dev: {
       message: 'Run the development server',
-      command: {
-        message: 'Select the project you want to run',
-        options: [
-          {
-            value: 'cd packages/project-1 && npm run dev',
-            label: 'project-1',
-          },
-          {
-            value: 'cd packages/project-2 && npm run dev',
-            label: 'project-2',
-          },
-        ],
-      },
+      options: [
+        {
+          value: 'cd packages/project-1 && npm run dev',
+          label: 'project-1',
+        },
+        {
+          value: 'cd packages/project-2 && npm run dev',
+          label: 'project-2',
+        },
+      ],
     },
   },
 })

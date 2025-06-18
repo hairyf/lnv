@@ -6,11 +6,18 @@ export interface Prompt {
   options: (() => Promise<Option<string>[]>) | Option<string>[]
 }
 
-export interface Script {
+export interface ScriptCommand {
   message?: string
   prompts?: Prompt[]
-  command: string | SelectOptions<string>
+  command: string
 }
+
+export interface ScriptSelectCommand extends Omit<SelectOptions<string>, 'message'> {
+  message?: string
+  prompts?: Prompt[]
+}
+
+export type Script = ScriptCommand | ScriptSelectCommand
 
 export interface UserConfig {
   injects?: {
