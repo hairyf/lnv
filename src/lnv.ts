@@ -2,9 +2,8 @@
 
 import type { LoadEnvironmentOptions } from './types'
 import process from 'node:process'
-import { context, executionScript, loadEnvironment, parseUserConfig } from './internal'
+import { authEnvironment, context, executionScript, loadEnvironment, mergeParseEnvironment, parseUserConfig } from './internal'
 import { run } from './run'
-import { entryToFile, replaceLiteralQuantity, uniq } from './utils'
 import { write } from './write'
 
 export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
@@ -18,18 +17,13 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
 
   await executionScript()
 
-  context.files = uniq(context.entries).filter(Boolean).map(entryToFile)
   Object.assign(context.parsed, context.before)
-
-  // console.log(context.files)
-  // TODO: Automatic vault authentication authorization
 
   await loadEnvironment()
 
-  context.env && Object.assign(context.parsed, context.env)
+  await authEnvironment()
 
-  for (const key in context.parsed)
-    context.parsed[key] = replaceLiteralQuantity(context.parsed[key], context.parsed)
+  mergeParseEnvironment()
 
   const message = assembleMessage()
 

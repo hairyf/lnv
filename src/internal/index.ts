@@ -10,6 +10,7 @@ import { expand } from 'dotenv-expand'
 import spawn from 'nano-spawn'
 import { loadConfig } from 'unconfig'
 import { readfiles } from '../utils'
+import { entryToFile, replaceLiteralQuantity, uniq } from './utils'
 
 export const context = {
   entries: [] as string[],
@@ -217,6 +218,8 @@ export async function authEnvironment(): Promise<void> {
 }
 
 export async function loadEnvironment(): Promise<void> {
+  context.files = uniq(context.entries).filter(Boolean).map(entryToFile)
+
   for (const file of context.files) {
     const [env, scope] = file.split(':')
     const files = readfiles(process.cwd(), env, context.depth)
@@ -227,8 +230,13 @@ export async function loadEnvironment(): Promise<void> {
     }
     context.sources.push({ env, files, scope, scopes: {} })
   }
+}
 
-  await authEnvironment()
+export function mergeParseEnvironment(): void {
+  context.env && Object.assign(context.parsed, context.env)
+
+  for (const key in context.parsed)
+    context.parsed[key] = replaceLiteralQuantity(context.parsed[key], context.parsed)
 }
 
 export function dokey(root: string, environment?: string): string | undefined {
