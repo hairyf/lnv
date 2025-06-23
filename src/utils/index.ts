@@ -47,3 +47,7 @@ export function readfiles(root: string, file: string, depth = false): string[] {
 
   return files
 }
+
+export function readfile(root: string, file: string, depth = false): string | undefined {
+  return readfiles(root, file, depth)[0]
+}

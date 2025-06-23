@@ -10,7 +10,7 @@ import { config } from 'dotenv'
 import spawn from 'nano-spawn'
 import { createSpinner } from 'nanospinner'
 import { loadConfig } from 'unconfig'
-import { readfiles, replaceLiteralQuantity } from '../utils'
+import { readfile, readfiles, replaceLiteralQuantity } from '../utils'
 import { entryToFile, uniq } from './utils'
 
 export const context = {
@@ -123,10 +123,8 @@ export async function authEnvironment(): Promise<void> {
 
   for (const filepath of environment.files) {
     const dirpath = path.dirname(filepath)
-    const dotEnvKey = dokey(dirpath)
-    const isExistsKeys = !!environment.scope && fs.existsSync(path.join(dirpath, '.env.keys'))
 
-    if (!dotEnvKey && !isExistsKeys) {
+    if (!dokey(dirpath, environment.scope)) {
       if (fs.existsSync(path.join(dirpath, '.env.me')))
         notSpecifiedFilepaths.push(filepath)
       else
@@ -187,11 +185,11 @@ export async function authEnvironment(): Promise<void> {
     const value = await select({
       message: filepath.replace(/\\\\/g, '/'),
       options: [
-        {
-          value: 'all',
-          label: 'all',
-          hint: 'Ask every time the script runs',
-        },
+        // {
+        //   value: 'all',
+        //   label: 'all',
+        //   hint: 'Ask every time the script runs',
+        // },
         ...dotenvKeys.map(key => ({
           value: key.env,
           label: key.env,
@@ -286,14 +284,15 @@ export function parse(env: string, filepath: string, scope?: string): DotenvConf
 }
 
 export function dokey(root: string, scope?: string): string | undefined {
-  const targetFile = readfiles(root, scope ? `.env.keys` : '.env.key')[0]
-  if (!targetFile)
+  const target = readfile(root, scope ? `.env.keys` : '.env.key')
+  if (!target)
     return undefined
-  const targetDir = path.dirname(targetFile)
-  if (root !== targetDir && fs.existsSync(path.join(targetDir, '.env.vault'))) {
+
+  const dirname = path.dirname(target)
+  if (root !== dirname && fs.existsSync(path.join(dirname, '.env.vault')))
     return
-  }
-  const parsed = config({ processEnv: {}, DOTENV_KEY: undefined, path: targetFile }).parsed
+
+  const parsed = config({ processEnv: {}, DOTENV_KEY: undefined, path: target }).parsed
   const value = scope ? parsed?.[`DOTENV_KEY_${scope.toUpperCase()}`] : parsed?.DOTENV_KEY
 
   return value
