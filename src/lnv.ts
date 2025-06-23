@@ -2,7 +2,7 @@
 
 import type { LoadEnvironmentOptions } from './types'
 import process from 'node:process'
-import { authEnvironment, context, executionScript, loadEnvironment, mergeParseEnvironment, parseUserConfig } from './internal'
+import { authEnvironment, context, executionScript, loadEnvironment, mergeParseEnvironment, parseUserConfig, readEnvironment } from './internal'
 import { run } from './run'
 import { write } from './write'
 
@@ -19,9 +19,11 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
 
   Object.assign(context.parsed, context.before)
 
-  await loadEnvironment()
+  await readEnvironment()
 
   await authEnvironment()
+
+  await loadEnvironment()
 
   mergeParseEnvironment()
 

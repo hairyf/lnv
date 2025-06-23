@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import type { DotenvConfigOutput } from 'dotenv'
 import type { Command, Script, SelectCommand, UserConfig } from '../types'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -34,7 +35,6 @@ export const context = {
     env: string
     files: string[]
     scope: string | undefined
-    scopes: { [file: string]: string }
   }[],
 }
 
@@ -230,9 +230,8 @@ export async function authEnvironment(): Promise<void> {
   }
 }
 
-export async function loadEnvironment(): Promise<void> {
+export async function readEnvironment(): Promise<void> {
   context.files = uniq(context.entries).filter(Boolean).map(entryToFile)
-
   for (const file of context.files) {
     const [env, scope] = file.split(':')
     const files = readfiles(process.cwd(), env, context.depth)
@@ -241,7 +240,24 @@ export async function loadEnvironment(): Promise<void> {
       !['.env', '.env.local'].includes(env) && console.log(failedMessage)
       continue
     }
-    context.sources.push({ env, files, scope, scopes: {} })
+    context.sources.push({ env, files, scope })
+  }
+}
+
+export async function loadEnvironment(): Promise<void> {
+  for (const { env, files, scope } of context.sources) {
+    let exist = false
+
+    for (const filepath of files) {
+      const output = parse(env, filepath, scope)
+      if (!output?.parsed)
+        continue
+      exist = true
+      Object.assign(context.parsed, output.parsed)
+    }
+
+    if (!exist)
+      console.log(`Failed to loading ${env} file not found in all scopes`)
   }
 }
 
@@ -252,14 +268,33 @@ export function mergeParseEnvironment(): void {
     context.parsed[key] = replaceLiteralQuantity(context.parsed[key], context.parsed)
 }
 
-export function dokey(root: string, environment?: string): string | undefined {
-  const targetFile = readfiles(root, environment ? `.env.keys` : '.env.key')[0]
+export function parse(env: string, filepath: string, scope?: string): DotenvConfigOutput | undefined {
+  if (!env.startsWith('.env.vault'))
+    return config({ path: filepath })
+
+  const DOTENV_KEY = dokey(path.dirname(filepath), scope)
+    || (scope
+      ? process.env[`DOTENV_KEY_${scope.toUpperCase()}`]
+      : process.env.DOTENV_KEY)
+
+  if (!DOTENV_KEY)
+    throw new Error('No DOTENV_KEY found in .env, .env.key or process.env')
+
+  delete process.env.DOTENV_KEY
+
+  return config({ DOTENV_KEY, path: filepath })
+}
+
+export function dokey(root: string, scope?: string): string | undefined {
+  const targetFile = readfiles(root, scope ? `.env.keys` : '.env.key')[0]
+  if (!targetFile)
+    return undefined
   const targetDir = path.dirname(targetFile)
   if (root !== targetDir && fs.existsSync(path.join(targetDir, '.env.vault'))) {
     return
   }
   const parsed = config({ processEnv: {}, DOTENV_KEY: undefined, path: targetFile }).parsed
-  const value = environment ? parsed?.[`DOTENV_KEY_${environment.toUpperCase()}`] : parsed?.DOTENV_KEY
-  delete process.env.DOTENV_KEY
+  const value = scope ? parsed?.[`DOTENV_KEY_${scope.toUpperCase()}`] : parsed?.DOTENV_KEY
+
   return value
 }
