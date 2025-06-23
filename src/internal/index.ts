@@ -9,8 +9,8 @@ import { config } from 'dotenv'
 import { expand } from 'dotenv-expand'
 import spawn from 'nano-spawn'
 import { loadConfig } from 'unconfig'
-import { readfiles } from '../utils'
-import { entryToFile, replaceLiteralQuantity, uniq } from './utils'
+import { readfiles, replaceLiteralQuantity } from '../utils'
+import { entryToFile, uniq } from './utils'
 
 export const context = {
   entries: [] as string[],

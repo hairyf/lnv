@@ -7,7 +7,3 @@ export function entryToFile(mod?: string): string {
     return `.env`
   return `.env.${mod}`
 }
-
-export function replaceLiteralQuantity(input: string, parsed: any): string {
-  return input.replace(/\$(\w+)/g, (_, key) => key in parsed ? parsed[key] : `$${key}`)
-}
