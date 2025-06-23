@@ -41,7 +41,7 @@ export async function registerMainCommand(cli: Argv): Promise<void> {
     .help()
     .parse() as ArgvParsed
 
-  const entry = [...(args._ || []), ...(args.entry || [])]
+  const entries = [...(args._ || []), ...(args.entry || [])]
 
   const env = args.value?.reduce(
     (acc, cur) => {
@@ -53,11 +53,10 @@ export async function registerMainCommand(cli: Argv): Promise<void> {
   )
 
   await lnv({
-    default: true,
     write: args.write,
     run: args.run,
     depth: args.depth,
-    entry,
+    entries,
     env,
   })
 }

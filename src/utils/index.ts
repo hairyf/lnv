@@ -1,11 +1,14 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 export function uniq<T>(array: T[]): T[] {
   return [...new Set([...array])]
 }
 
-export function entryToFile(mod?: string | boolean): string {
-  return mod !== 'env'
-    ? mod === 'dotenv' ? 'env.vault' : `env.${mod}`
-    : mod
+export function entryToFile(mod?: string): string {
+  if (mod === 'env')
+    return `.env`
+  return `.env.${mod}`
 }
 
 export function parseCommandString(command: string): string[] {
@@ -36,4 +39,21 @@ export function parseCommandString(command: string): string[] {
 
 export function replaceLiteralQuantity(input: string, parsed: any): string {
   return input.replace(/\$(\w+)/g, (_, key) => key in parsed ? parsed[key] : `$${key}`)
+}
+
+export function readfiles(root: string, file: string, depth = false): string[] {
+  let currentDir = root
+  const files: string[] = []
+
+  while (currentDir !== path.parse(currentDir).root) {
+    const envPath = path.join(currentDir, file)
+    if (fs.existsSync(envPath)) {
+      files.push(envPath)
+      if (!depth)
+        return files
+    }
+    currentDir = path.dirname(currentDir)
+  }
+
+  return files
 }

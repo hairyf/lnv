@@ -18,6 +18,7 @@ export async function run(command: string | string[], env?: Record<string, strin
     stdin: 'inherit',
     stdout: 'inherit',
   }
+
   const commands = command.split('&&').map(cmd => cmd.trim())
   for (let command of commands) {
     command = replaceLiteralQuantity(command, mergedEnv)
