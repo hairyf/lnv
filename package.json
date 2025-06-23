@@ -22,9 +22,13 @@
   ],
   "sideEffects": false,
   "main": "src/index.ts",
-  "bin": { "lnv": "./bin/index.dev.mjs" },
+  "bin": {
+    "lnv": "./bin/index.dev.mjs"
+  },
   "publishConfig": {
-    "bin": { "lnv": "./bin/index.js" },
+    "bin": {
+      "lnv": "./bin/index.js"
+    },
     "exports": {
       ".": "./dist/index.js",
       "./package.json": "./package.json"
@@ -50,8 +54,8 @@
     "@clack/prompts": "catalog:",
     "consola": "catalog:",
     "dotenv": "catalog:cli",
-    "dotenv-expand": "catalog:cli",
     "nano-spawn": "catalog:cli",
+    "nanospinner": "catalog:cli",
     "unconfig": "catalog:",
     "yargs": "catalog:cli"
   },

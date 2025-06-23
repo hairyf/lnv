@@ -6,8 +6,8 @@ import process from 'node:process'
 import { intro, isCancel, outro, select } from '@clack/prompts'
 import { colors } from 'consola/utils'
 import { config } from 'dotenv'
-import { expand } from 'dotenv-expand'
 import spawn from 'nano-spawn'
+import { createSpinner } from 'nanospinner'
 import { loadConfig } from 'unconfig'
 import { readfiles, replaceLiteralQuantity } from '../utils'
 import { entryToFile, uniq } from './utils'
@@ -141,11 +141,17 @@ export async function authEnvironment(): Promise<void> {
   console.log('')
 
   if (unauthorizedFilepaths.length)
-    console.log(`Found ${unauthorizedFilepaths.length} unauthorized directories, Please authorize them to access the vault environment variables.`)
+    intro(`Found ${unauthorizedFilepaths.length} unauthorized directories, Please authorize them to access the vault environment variables.`)
+
+  const spinner = createSpinner()
+  spinner.start(' Pulling dotenv-vault...')
+  await spawn('npx dotenv-vault help')
+  spinner.stop()
 
   for (const filepath of unauthorizedFilepaths) {
     const dirpath = path.dirname(filepath)
     console.log(`${colors.dim(`entry:    `)}${filepath}`)
+
     await spawn('npx dotenv-vault login', {
       cwd: dirpath,
       stdio: 'inherit',
@@ -153,17 +159,24 @@ export async function authEnvironment(): Promise<void> {
       stdin: 'inherit',
       stdout: 'inherit',
     })
+
     process.stdout.write('\x1B[1A')
     process.stdout.write('\x1B[2K')
     notSpecifiedFilepaths.push(filepath)
   }
 
-  console.log(`Found ${notSpecifiedFilepaths.length} directories not specified environment, Please select environment.`)
+  intro(`Found ${notSpecifiedFilepaths.length} directories not specified environment, Please select environment.`)
 
   for (const filepath of notSpecifiedFilepaths) {
     const dirpath = path.dirname(filepath)
 
+    const spinner = createSpinner()
+
+    spinner.start(' Loading dotenv environment...')
+
     const { stdout } = await spawn('npx dotenv-vault keys', { cwd: dirpath })
+
+    spinner.stop()
 
     const dotenvKeys = stdout.split('\n')
       .filter(row => row.includes('dotenv://'))
@@ -240,7 +253,12 @@ export function mergeParseEnvironment(): void {
 }
 
 export function dokey(root: string, environment?: string): string | undefined {
-  const parsed = expand(config({ processEnv: {}, DOTENV_KEY: undefined, path: readfiles(root, environment ? `.env.keys` : '.env.key') })).parsed
+  const targetFile = readfiles(root, environment ? `.env.keys` : '.env.key')[0]
+  const targetDir = path.dirname(targetFile)
+  if (root !== targetDir && fs.existsSync(path.join(targetDir, '.env.vault'))) {
+    return
+  }
+  const parsed = config({ processEnv: {}, DOTENV_KEY: undefined, path: targetFile }).parsed
   const value = environment ? parsed?.[`DOTENV_KEY_${environment.toUpperCase()}`] : parsed?.DOTENV_KEY
   delete process.env.DOTENV_KEY
   return value

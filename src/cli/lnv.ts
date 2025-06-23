@@ -11,7 +11,7 @@ export interface ArgvParsed {
   run?: string
 }
 
-export async function registerMainCommand(cli: Argv): Promise<void> {
+export async function registerLnvCommand(cli: Argv): Promise<void> {
   const args = cli.usage('lnv <entry> [args]')
     .alias('h', 'help')
     .option('value', {

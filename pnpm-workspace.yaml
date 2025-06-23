@@ -20,10 +20,10 @@ catalogs:
     '@types/yargs': ^17.0.33
     bumpp: ^10.1.0
     dotenv: ^16.4.7
-    dotenv-expand: ^12.0.1
     eslint: ^9.22.0
     lint-staged: ^15.5.0
     nano-spawn: ^0.2.0
+    nanospinner: ^1.2.2
     simple-git-hooks: ^2.11.1
     tsup: ^0.0.0
     tsx: ^4.19.3
