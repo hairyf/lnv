@@ -149,7 +149,7 @@ export async function authEnvironment(): Promise<void> {
     const dirpath = path.dirname(filepath)
     console.log(`${colors.dim(`entry:    `)}${filepath}`)
 
-    await spawn(`node ${dotenvVaultBin} login`, {
+    await spawn('node', [dotenvVaultBin, 'login'], {
       cwd: dirpath,
       stdio: 'inherit',
       stderr: 'inherit',
@@ -171,7 +171,7 @@ export async function authEnvironment(): Promise<void> {
 
     spinner.start(' Loading dotenv environment...')
 
-    const { stdout } = await spawn(`node ${dotenvVaultBin} keys`, { cwd: dirpath })
+    const { stdout } = await spawn('node', [dotenvVaultBin, 'keys'], { cwd: dirpath })
 
     spinner.stop()
 
