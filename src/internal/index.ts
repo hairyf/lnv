@@ -259,8 +259,6 @@ export async function loadEnvironment(): Promise<void> {
 }
 
 export function mergeParseEnvironment(): void {
-  context.env && Object.assign(context.parsed, context.env)
-
   for (const key in context.parsed)
     context.parsed[key] = replaceLiteralQuantity(context.parsed[key], context.parsed)
 }

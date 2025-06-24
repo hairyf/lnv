@@ -25,6 +25,9 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
 
   await loadEnvironment()
 
+  Object.assign(context.parsed, context.env)
+  Object.assign(context.parsed, context.after)
+
   mergeParseEnvironment()
 
   const message = assembleMessage()
