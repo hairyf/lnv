@@ -97,8 +97,9 @@ export async function executionScript(): Promise<void> {
       }
       parsed[key] = value
     }
-
     Object.assign(context.parsed, parsed)
+    context.run = run
+    return
   }
 
   const value = await select({
@@ -135,8 +136,6 @@ export async function authEnvironment(): Promise<void> {
 
   if (!unauthorizedFilepaths.length && !notSpecifiedFilepaths.length)
     return
-
-  console.log('')
 
   if (unauthorizedFilepaths.length)
     intro(`Found ${unauthorizedFilepaths.length} unauthorized directories, Please authorize them to access the vault environment variables.`)
