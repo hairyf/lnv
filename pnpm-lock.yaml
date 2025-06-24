@@ -67,6 +67,9 @@ catalogs:
     dotenv-vault:
       specifier: ^1.26.2
       version: 1.26.2
+    mlly:
+      specifier: ^1.7.4
+      version: 1.7.4
     next:
       specifier: latest
       version: 15.3.4
@@ -76,9 +79,9 @@ catalogs:
     react-dom:
       specifier: ^18.3.1
       version: 18.3.1
-    resolve-import-path:
-      specifier: ^0.3.2
-      version: 0.3.2
+    resolve-global:
+      specifier: ^2.0.0
+      version: 2.0.0
     unconfig:
       specifier: ^7.3.2
       version: 7.3.2
@@ -105,6 +108,9 @@ importers:
 
   .:
     dependencies:
+      '@antfu/utils':
+        specifier: catalog:inlined
+        version: 9.1.0
       '@clack/prompts':
         specifier: 'catalog:'
         version: 0.11.0
@@ -117,15 +123,18 @@ importers:
       dotenv-vault:
         specifier: 'catalog:'
         version: 1.26.2(@types/node@22.13.10)(typescript@5.8.2)
+      mlly:
+        specifier: 'catalog:'
+        version: 1.7.4
       nano-spawn:
         specifier: catalog:cli
         version: 0.2.0
       nanospinner:
         specifier: catalog:cli
         version: 1.2.2
-      resolve-import-path:
+      resolve-global:
         specifier: 'catalog:'
-        version: 0.3.2
+        version: 2.0.0
       unconfig:
         specifier: 'catalog:'
         version: 7.3.2
@@ -139,9 +148,6 @@ importers:
       '@antfu/ni':
         specifier: catalog:cli
         version: 24.2.0
-      '@antfu/utils':
-        specifier: catalog:inlined
-        version: 9.1.0
       '@hairy/lnv':
         specifier: workspace:*
         version: 'link:'
@@ -2010,10 +2016,6 @@ packages:
     resolution: {integrity: sha512-QQnnxNyfvmHFIsj7gkPcYymR8Jdw/o7mp5ZFihxn6h8Ci6fh3Dx4E1gPjpQEpIuPo9XVNY/ZUwh4BPMjGyL01g==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
-  ini@4.1.3:
-    resolution: {integrity: sha512-X7rqawQBvfdjS10YU1y1YVreA3SsLrW9dX2CewP2EbBJM4ypVNLDkO5y04gejPwKIY9lR+7r9gn3rFPt/kmWFg==}
-    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-
   inquirer@8.2.6:
     resolution: {integrity: sha512-M1WuAmb7pn9zdFRtQYk26ZBoY043Sse0wVDdk4Bppr+JOXyQYybdtvK+l9wUibhtjdjvtoiNy8tk+EgsYIUqKg==}
     engines: {node: '>=12.0.0'}
@@ -2064,10 +2066,6 @@ packages:
   is-number@7.0.0:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
-
-  is-path-inside@4.0.0:
-    resolution: {integrity: sha512-lJJV/5dYS+RcL8uQdBDW9c9uWFLLBNRyFhnAKXw5tVqLlKZ4RMGZKv+YQ/IA3OhD+RpbJa1LLFM1FQPGyIXvOA==}
-    engines: {node: '>=12'}
 
   is-retry-allowed@1.2.0:
     resolution: {integrity: sha512-RUbUeKwvm3XG2VYamhJL1xFktgjvPzL0Hq8C+6yrWIswDy3BIXGqCxhxkc30N9jqK311gVU137K8Ei55/zVJRg==}
@@ -2750,8 +2748,9 @@ packages:
     resolution: {integrity: sha512-qYg9KP24dD5qka9J47d0aVky0N+b4fTU89LN9iDnjB5waksiC49rvMB0PrUJQGoTmH50XPiqOvAjDfaijGxYZw==}
     engines: {node: '>=8'}
 
-  resolve-import-path@0.3.2:
-    resolution: {integrity: sha512-NWw1tK6/Sr/XmxAMAGu9AydCiCx1Vi7W7yCfBFLZbPoEMirL/gWUZDDM8rrd0z6AGpc0W5LdBLyeUw/BHl03Bw==}
+  resolve-global@2.0.0:
+    resolution: {integrity: sha512-gnAQ0Q/KkupGkuiMyX4L0GaBV8iFwlmoXsMtOz+DFTaKmHhOO/dSlP1RMKhpvHv/dh6K/IQkowGJBqUG0NfBUw==}
+    engines: {node: '>=18'}
 
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
@@ -5198,8 +5197,6 @@ snapshots:
 
   ini@4.1.1: {}
 
-  ini@4.1.3: {}
-
   inquirer@8.2.6:
     dependencies:
       ansi-escapes: 4.3.2
@@ -5250,8 +5247,6 @@ snapshots:
   is-interactive@1.0.0: {}
 
   is-number@7.0.0: {}
-
-  is-path-inside@4.0.0: {}
 
   is-retry-allowed@1.2.0: {}
 
@@ -6083,13 +6078,9 @@ snapshots:
 
   resolve-from@5.0.0: {}
 
-  resolve-import-path@0.3.2:
+  resolve-global@2.0.0:
     dependencies:
-      consola: 3.4.2
       global-directory: 4.0.1
-      ini: 4.1.3
-      is-path-inside: 4.0.0
-      resolve: 1.22.10
 
   resolve-pkg-maps@1.0.0: {}
 

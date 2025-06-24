@@ -51,20 +51,21 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
+    "@antfu/utils": "catalog:inlined",
     "@clack/prompts": "catalog:",
     "consola": "catalog:",
     "dotenv": "catalog:cli",
     "dotenv-vault": "catalog:",
+    "mlly": "catalog:",
     "nano-spawn": "catalog:cli",
     "nanospinner": "catalog:cli",
-    "resolve-import-path": "catalog:",
+    "resolve-global": "catalog:",
     "unconfig": "catalog:",
     "yargs": "catalog:cli"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
-    "@antfu/utils": "catalog:inlined",
     "@hairy/lnv": "workspace:*",
     "@types/node": "catalog:types",
     "@types/yargs": "catalog:cli",
