@@ -9,9 +9,9 @@ import { colors } from 'consola/utils'
 import { config } from 'dotenv'
 import spawn from 'nano-spawn'
 import { createSpinner } from 'nanospinner'
-import { resolveImport } from 'resolve-import-path'
 import { loadConfig } from 'unconfig'
 import { readfile, readfiles, replaceLiteralQuantity } from '../utils'
+import { resolveImportPath } from './resolve'
 import { entryToFile, uniq } from './utils'
 
 export const context = {
@@ -138,7 +138,7 @@ export async function authEnvironment(): Promise<void> {
   if (!unauthorizedFilepaths.length && !notSpecifiedFilepaths.length)
     return
 
-  const dotenvVaultRoot = path.dirname(resolveImport('dotenv-vault/package.json'))
+  const dotenvVaultRoot = path.dirname(await resolveImportPath('dotenv-vault/package.json'))
   const dotenvVaultJson = JSON.parse(fs.readFileSync(path.join(dotenvVaultRoot, 'package.json'), 'utf-8'))
   const dotenvVaultBin = path.join(dotenvVaultRoot, dotenvVaultJson.bin['dotenv-vault'])
 
