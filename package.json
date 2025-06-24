@@ -54,8 +54,10 @@
     "@clack/prompts": "catalog:",
     "consola": "catalog:",
     "dotenv": "catalog:cli",
+    "dotenv-vault": "catalog:",
     "nano-spawn": "catalog:cli",
     "nanospinner": "catalog:cli",
+    "resolve-import-path": "catalog:",
     "unconfig": "catalog:",
     "yargs": "catalog:cli"
   },
