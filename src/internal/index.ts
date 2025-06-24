@@ -9,6 +9,7 @@ import { colors } from 'consola/utils'
 import { config } from 'dotenv'
 import spawn from 'nano-spawn'
 import { createSpinner } from 'nanospinner'
+import { resolveImport } from 'resolve-import-path'
 import { loadConfig } from 'unconfig'
 import { readfile, readfiles, replaceLiteralQuantity } from '../utils'
 import { entryToFile, uniq } from './utils'
@@ -137,19 +138,18 @@ export async function authEnvironment(): Promise<void> {
   if (!unauthorizedFilepaths.length && !notSpecifiedFilepaths.length)
     return
 
+  const dotenvVaultRoot = path.dirname(resolveImport('dotenv-vault/package.json'))
+  const dotenvVaultJson = JSON.parse(fs.readFileSync(path.join(dotenvVaultRoot, 'package.json'), 'utf-8'))
+  const dotenvVaultBin = path.join(dotenvVaultRoot, dotenvVaultJson.bin['dotenv-vault'])
+
   if (unauthorizedFilepaths.length)
     intro(`Found ${unauthorizedFilepaths.length} unauthorized directories, Please authorize them to access the vault environment variables.`)
-
-  const spinner = createSpinner()
-  spinner.start(' Pulling dotenv-vault...')
-  await spawn('npx dotenv-vault help')
-  spinner.stop()
 
   for (const filepath of unauthorizedFilepaths) {
     const dirpath = path.dirname(filepath)
     console.log(`${colors.dim(`entry:    `)}${filepath}`)
 
-    await spawn('npx dotenv-vault login', {
+    await spawn(`node ${dotenvVaultBin} login`, {
       cwd: dirpath,
       stdio: 'inherit',
       stderr: 'inherit',
@@ -171,7 +171,7 @@ export async function authEnvironment(): Promise<void> {
 
     spinner.start(' Loading dotenv environment...')
 
-    const { stdout } = await spawn('npx dotenv-vault keys', { cwd: dirpath })
+    const { stdout } = await spawn(`node ${dotenvVaultBin} keys`, { cwd: dirpath })
 
     spinner.stop()
 
