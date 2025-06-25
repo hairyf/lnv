@@ -17,6 +17,9 @@
     "dotenv",
     "env",
     "vault-dotenv",
+    "vault",
+    "dotenv-vault",
+    "dotenv-cli",
     "typescript",
     "node"
   ],
