@@ -15,15 +15,15 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   context.entries.push('env')
   context.entries.unshift('local')
 
-  await executionScript()
-
-  Object.assign(context.parsed, context.before)
-
   await readEnvironment()
 
   await authEnvironment()
 
   await loadEnvironment()
+
+  await executionScript()
+
+  Object.assign(context.parsed, context.before)
 
   Object.assign(context.parsed, context.env)
   Object.assign(context.parsed, context.after)

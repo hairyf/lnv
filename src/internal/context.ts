@@ -18,9 +18,10 @@ export const context = {
 
   files: [] as string[],
 
+  scope: undefined as string | undefined,
+
   sources: [] as {
     env: string
-    files: string[]
-    scope: string | undefined
+    files: { path: string, scope?: string }[]
   }[],
 }

@@ -1,10 +1,27 @@
-import type { Option, SelectOptions } from '@clack/prompts'
+import type { Option, SelectOptions, TextOptions } from '@clack/prompts'
 
-export interface Prompt {
+export type ParsedFn<V> = (parsed: Record<string, string>) => Promise<V> | V
+
+export interface PromptSelect extends Omit<SelectOptions<string>, 'options' | 'message'> {
+  type: 'select'
   key: string
   message?: string
-  options: (() => Promise<Option<string>[]>) | Option<string>[]
+  options: ParsedFn<Option<string>[]> | Option<string>[]
 }
+
+export interface PromptText extends Omit<TextOptions, 'message'> {
+  type: 'text'
+  key: string
+  message?: string
+}
+
+export interface PromptHandler {
+  type: 'handler'
+  key: string
+  handler: ParsedFn<string>
+}
+
+export type Prompt = PromptSelect | PromptText | PromptHandler
 
 export interface Environment {
   [key: string]: string
@@ -17,18 +34,13 @@ export interface EnvironmentOptions {
   depth?: boolean
 }
 
-export interface Command extends EnvironmentOptions {
+export interface Command extends Omit<SelectOptions<string>, 'message' | 'options'>, EnvironmentOptions {
   message?: string
   prompts?: Prompt[]
-  command: string
+  command: string | Option<string>[]
 }
 
-export interface SelectCommand extends Omit<SelectOptions<string>, 'message'>, EnvironmentOptions {
-  message?: string
-  prompts?: Prompt[]
-}
-
-export type Script = Command | SelectCommand | string
+export type Script = Command | string
 
 export interface UserConfig {
   injects?: EnvironmentOptions

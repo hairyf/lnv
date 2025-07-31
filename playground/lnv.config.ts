@@ -30,7 +30,7 @@ const config = defineConfig({
   scripts: {
     'prisma': {
       message: 'Running Prisma command',
-      options: [
+      command: [
         { value: '', label: 'Validate schema (prisma validate)' },
         { value: '', label: 'Generate Prisma client (prisma generate)' },
         { value: '', label: 'Run migrations (prisma migrate dev)' },

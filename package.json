@@ -56,6 +56,7 @@
   "dependencies": {
     "@antfu/utils": "catalog:inlined",
     "@clack/prompts": "catalog:",
+    "@hairy/utils": "catalog:inlined",
     "consola": "catalog:",
     "dotenv": "catalog:cli",
     "dotenv-vault": "catalog:",

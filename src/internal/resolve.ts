@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
 import fs from 'node:fs'
 import path from 'node:path'
+import consola from 'consola'
 import { resolvePath, resolvePathSync } from 'mlly'
 import { resolveGlobal } from 'resolve-global'
 
@@ -18,7 +18,7 @@ export async function resolveImport(module: string, ensure = false): Promise<any
     return await resolvePath(module, { url: import.meta.url })
   }
   catch (error) {
-    console.log(error)
+    consola.log(error)
   }
 
   try {
@@ -29,7 +29,7 @@ export async function resolveImport(module: string, ensure = false): Promise<any
   if (ensure)
     throw new Error(`Failed to resolve package ${module}`)
   else
-    console.warn(`Failed to resolve package ${module}`)
+    consola.warn(`Failed to resolve package ${module}`)
 }
 
 /**
@@ -46,7 +46,7 @@ export function resolveImportSync(module: string, ensure = false): string | unde
     return resolvePathSync(module, { url: import.meta.url })
   }
   catch (error) {
-    console.log(error)
+    consola.log(error)
   }
 
   try {
@@ -57,7 +57,7 @@ export function resolveImportSync(module: string, ensure = false): string | unde
   if (ensure)
     throw new Error(`Failed to resolve package ${module}`)
   else
-    console.warn(`Failed to resolve package ${module}`)
+    consola.warn(`Failed to resolve package ${module}`)
 }
 
 /**

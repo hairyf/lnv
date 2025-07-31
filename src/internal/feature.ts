@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import type { DotenvConfigOutput } from 'dotenv'
-import type { Command, Script, SelectCommand, UserConfig } from '../types'
+import type { Command, Script, UserConfig } from '../types'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { intro, isCancel, outro, select } from '@clack/prompts'
+import { intro, isCancel, outro, select, text } from '@clack/prompts'
 import { colors } from 'consola/utils'
 import { config } from 'dotenv'
 import { createSpinner } from 'nanospinner'
@@ -48,39 +48,58 @@ export async function executionScript(): Promise<void> {
     before,
     after,
     ...selectOptions
-  } = context.script as Command & SelectCommand
+  } = context.script as Command
 
   Object.assign(context.before, before)
   Object.assign(context.after, after)
   context.entries.unshift(...entries)
   context.depth = context.depth || depth
 
-  if (run && typeof selectOptions.options === 'undefined') {
+  if (typeof run === 'string' && message)
     intro(message)
-    const parsed: Record<string, string> = {}
-    for (const prompt of prompts) {
-      const { key, message, options } = prompt
-      const choices = typeof options === 'function'
-        ? await options()
-        : options
-      const value = await select({
-        message: message || `Please select ${key}`,
+
+  const parsed: Record<string, string> = {}
+  for (const prompt of prompts) {
+    let value: string | symbol | undefined
+    if (prompt.type === 'handler') {
+      value = await prompt.handler(parsed)
+    }
+
+    if (prompt.type === 'select') {
+      const choices = typeof prompt.options === 'function'
+        ? await prompt.options(parsed)
+        : prompt.options
+      value = await select({
+        message: message || `Please select ${prompt.key}`,
         options: choices,
       })
-      if (isCancel(value)) {
-        outro('Operation cancelled')
-        process.exit(0)
-      }
-      parsed[key] = value
     }
-    Object.assign(context.parsed, parsed)
+
+    if (prompt.type === 'text') {
+      value = await text({
+        message: prompt.message || `Please enter ${prompt.key}`,
+        ...selectOptions,
+      })
+    }
+
+    if (isCancel(value)) {
+      outro('Operation cancelled')
+      process.exit(0)
+    }
+
+    if (value)
+      parsed[prompt.key] = value
+  }
+  Object.assign(context.parsed, parsed)
+
+  if (typeof run === 'string') {
     context.run = run
     return
   }
 
   const value = await select({
     message: message || 'Please select a command',
-    ...selectOptions,
+    options: run,
   })
   if (isCancel(value)) {
     outro('Operation cancelled')
@@ -98,16 +117,14 @@ export async function authEnvironment(): Promise<void> {
   const unauthorizedFilepaths: string[] = []
   const notSpecifiedFilepaths: string[] = []
 
-  for (const filepath of environment.files) {
-    const dirpath = path.dirname(filepath)
-
-    if (!dokey(dirpath, environment.scope)) {
-      if (fs.existsSync(path.join(dirpath, '.env.me')))
-        notSpecifiedFilepaths.push(filepath)
-      else
-        unauthorizedFilepaths.push(filepath)
+  for (const file of environment.files) {
+    const dirpath = path.dirname(file.path)
+    if (fs.existsSync(path.join(dirpath, '.env.key')) || fs.existsSync(path.join(dirpath, '.env.keys')))
       continue
-    }
+    if (fs.existsSync(path.join(dirpath, '.env.me')))
+      notSpecifiedFilepaths.push(file.path)
+    else
+      unauthorizedFilepaths.push(file.path)
   }
 
   if (!unauthorizedFilepaths.length && !notSpecifiedFilepaths.length)
@@ -155,11 +172,11 @@ export async function authEnvironment(): Promise<void> {
     const value = await select({
       message: filepath.replace(/\\\\/g, '/'),
       options: [
-        // {
-        //   value: 'all',
-        //   label: 'all',
-        //   hint: 'Ask every time the script runs',
-        // },
+        {
+          value: 'all',
+          label: 'all',
+          hint: 'Ask every time the script runs',
+        },
         ...dotenvKeys.map(key => ({
           value: key.env,
           label: key.env,
@@ -201,23 +218,47 @@ export async function authEnvironment(): Promise<void> {
 export async function readEnvironment(): Promise<void> {
   context.files = uniq(context.entries).filter(Boolean).map(entryToFile)
   for (const file of context.files) {
-    const [env, scope] = file.split(':')
+    const [env, defaultScope] = file.split(':')
     const files = readfiles(process.cwd(), env, context.depth)
     if (!files.length) {
       const failedMessage = `Failed to loading ${env} file not found in all scopes`
       !['.env', '.env.local'].includes(env) && console.log(failedMessage)
       continue
     }
-    context.sources.push({ env, files, scope })
+    const fileDetails = files.map(async (filepath) => {
+      const keysPath = path.join(path.dirname(filepath), '.env.keys')
+      let scope = defaultScope
+      if (env === '.env.vault' && fs.existsSync(keysPath)) {
+        const keys = config({ path: keysPath, processEnv: {} })
+        const scopes = Object.keys(keys.parsed || {}).map(key => key.split('="dotenv')[0].replace('DOTENV_KEY_', '').toLowerCase())
+        const value = await select<any>({
+          message: filepath.replace(/\\\\/g, '/'),
+          options: [
+            ...scopes.map(key => ({
+              value: key,
+              label: key,
+            })),
+          ],
+        })
+        if (isCancel(value)) {
+          outro('Operation cancelled')
+          process.exit(0)
+        }
+        scope = value
+      }
+      return { path: filepath, scope }
+    })
+
+    context.sources.push({ env, files: await Promise.all(fileDetails) })
+    console.log(`Found ${files.length} ${env} files in all scopes`)
   }
 }
 
 export async function loadEnvironment(): Promise<void> {
-  for (const { env, files, scope } of context.sources) {
+  for (const { env, files } of context.sources) {
     let exist = false
-
-    for (const filepath of files) {
-      const output = parse(env, filepath, scope)
+    for (const file of files) {
+      const output = parse(env, file.path, file.scope)
       if (!output?.parsed)
         continue
       exist = true
