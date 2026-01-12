@@ -47,27 +47,29 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
 
 function assembleMessage(
 ): string {
-  const foundParsed = !Object.keys(context.parsed).length
-  const foundManual = !Object.keys(context.env || {}).length
-  const foundFiles = !context.parsedFiles.length
+  const notFoundParsed = !Object.keys(context.parsed).length
+  const notFoundManual = !Object.keys(context.env || {}).length
+  const notFoundFiles = !context.parsedFiles.length
 
-  if (foundParsed && foundFiles && foundManual)
+  if (notFoundParsed && notFoundFiles && notFoundManual) {
     console.log('No environment variables found')
+    return ''
+  }
 
   let message = ''
-  if (foundFiles && !foundManual) {
+  if (notFoundFiles && !notFoundManual) {
     message = context.run
       ? `Successfully loaded ${context.parsedFiles.join(',')} to runtime environment`
       : `Successfully loaded ${context.parsedFiles.join(',')} to .env`
   }
-  else if (!foundFiles) {
+  else if (!notFoundFiles) {
     message = context.run
       ? `Successfully loaded ${context.parsedFiles.join(',')} to runtime environment`
       : `Successfully wrote ${context.parsedFiles.join(',')} to .env`
   }
-  if (!foundFiles && !foundManual)
+  if (!notFoundFiles && !notFoundManual)
     message += ' and with variables:'
-  else if (!foundManual)
+  else if (!notFoundManual)
     message = 'Successfully manual loaded environment variables'
 
   if (context.env) {

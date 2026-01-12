@@ -3,7 +3,7 @@
   "type": "module",
   "version": "9.0.0",
   "packageManager": "pnpm@10.6.5",
-  "description": "_description_",
+  "description": "Loading environment variables in Next.js and other frameworks can be quite cumbersome, and using dotenv or vault at runtime is also inconvenient. That's why my created this tool",
   "author": "Hairyf <wwu710632@gmail.com>",
   "license": "MIT",
   "funding": "https://github.com/sponsors/hairyf",

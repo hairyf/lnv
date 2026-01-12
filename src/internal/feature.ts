@@ -217,6 +217,10 @@ export async function authEnvironment(): Promise<void> {
 
 export async function readEnvironment(): Promise<void> {
   context.files = uniq(context.entries).filter(Boolean).map(entryToFile)
+
+  if (context.files.length)
+    console.log(`Found environment files:`)
+
   for (const file of context.files) {
     const [env, defaultScope] = file.split(':')
     const files = readfiles(process.cwd(), env, context.depth)
@@ -250,8 +254,10 @@ export async function readEnvironment(): Promise<void> {
     })
 
     context.sources.push({ env, files: await Promise.all(fileDetails) })
-    console.log(`Found ${files.length} ${env} files in all scopes`)
+    console.log(`- ${colors.gray(env)} (${files.length} ${files.length > 1 ? 'files' : 'file'} found)`)
   }
+  if (context.files.length)
+    console.log()
 }
 
 export async function loadEnvironment(): Promise<void> {
@@ -262,6 +268,7 @@ export async function loadEnvironment(): Promise<void> {
       if (!output?.parsed)
         continue
       exist = true
+      context.parsedFiles.push(env)
       Object.assign(context.parsed, output.parsed)
     }
 
