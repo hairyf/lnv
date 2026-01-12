@@ -180,6 +180,7 @@ const config = defineConfig({
       prompts: [
         {
           key: 'network',
+          type: 'select', // or 'text' or 'multiselect' or 'confirm' or 'password' or 'handler(custom function)'
           message: 'Select Your Network',
           options: [
             { value: 'moonchain', label: 'Moonchain' },
@@ -188,6 +189,7 @@ const config = defineConfig({
         },
         {
           key: 'modulePath',
+          type: 'select',
           message: 'Select the module you want to deploy',
           options: async () => {
             const files = await fs.readdir('./ignition/modules')

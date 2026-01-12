@@ -4,7 +4,16 @@ import type { Command, Script, UserConfig } from '../types'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { intro, isCancel, outro, select, text } from '@clack/prompts'
+import {
+  confirm,
+  intro,
+  isCancel,
+  multiselect,
+  outro,
+  password,
+  select,
+  text,
+} from '@clack/prompts'
 import { colors } from 'consola/utils'
 import { config } from 'dotenv'
 import { createSpinner } from 'nanospinner'
@@ -47,7 +56,7 @@ export async function executionScript(): Promise<void> {
     message,
     before,
     after,
-    ...selectOptions
+    ...options
   } = context.script as Command
 
   Object.assign(context.before, before)
@@ -60,7 +69,7 @@ export async function executionScript(): Promise<void> {
 
   const parsed: Record<string, string> = {}
   for (const prompt of prompts) {
-    let value: string | symbol | undefined
+    let value: string | string[] | boolean | symbol | undefined
     if (prompt.type === 'handler') {
       value = await prompt.handler(parsed)
     }
@@ -75,12 +84,28 @@ export async function executionScript(): Promise<void> {
       })
     }
 
+    if (prompt.type === 'multiselect') {
+      const choices = typeof prompt.options === 'function'
+        ? await prompt.options(parsed)
+        : prompt.options
+      const selected = await multiselect({
+        message: prompt.message || `Please select ${prompt.key}`,
+        options: choices,
+      })
+      value = selected
+    }
+
+    if (prompt.type === 'confirm')
+      value = await confirm({ message: prompt.message || `Please confirm ${prompt.key}` })
+
     if (prompt.type === 'text') {
       value = await text({
         message: prompt.message || `Please enter ${prompt.key}`,
-        ...selectOptions,
+        ...options,
       })
     }
+    if (prompt.type === 'password')
+      value = await password({ message: prompt.message || `Please enter ${prompt.key}` })
 
     if (isCancel(value)) {
       outro('Operation cancelled')
@@ -88,7 +113,7 @@ export async function executionScript(): Promise<void> {
     }
 
     if (value)
-      parsed[prompt.key] = value
+      parsed[prompt.key] = Array.isArray(value) ? value.join(',') : value.toString()
   }
   Object.assign(context.parsed, parsed)
 

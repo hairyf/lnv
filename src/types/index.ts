@@ -1,4 +1,4 @@
-import type { Option, SelectOptions, TextOptions } from '@clack/prompts'
+import type { ConfirmOptions, MultiSelectOptions, Option, PasswordOptions, SelectOptions, TextOptions } from '@clack/prompts'
 
 export type ParsedFn<V> = (parsed: Record<string, string>) => Promise<V> | V
 
@@ -9,8 +9,27 @@ export interface PromptSelect extends Omit<SelectOptions<string>, 'options' | 'm
   options: ParsedFn<Option<string>[]> | Option<string>[]
 }
 
+export interface PromptMultiselect extends Omit<MultiSelectOptions<string>, 'options' | 'message'> {
+  type: 'multiselect'
+  key: string
+  message?: string
+  options: ParsedFn<Option<string>[]> | Option<string>[]
+}
+
+export interface PromptConfirm extends Omit<ConfirmOptions, 'message'> {
+  type: 'confirm'
+  key: string
+  message?: string
+}
+
 export interface PromptText extends Omit<TextOptions, 'message'> {
   type: 'text'
+  key: string
+  message?: string
+}
+
+export interface PromptPassword extends Omit<PasswordOptions, 'message'> {
+  type: 'password'
   key: string
   message?: string
 }
@@ -21,7 +40,7 @@ export interface PromptHandler {
   handler: ParsedFn<string>
 }
 
-export type Prompt = PromptSelect | PromptText | PromptHandler
+export type Prompt = PromptSelect | PromptText | PromptPassword | PromptMultiselect | PromptConfirm | PromptHandler
 
 export interface Environment {
   [key: string]: string
