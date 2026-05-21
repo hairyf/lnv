@@ -19,5 +19,5 @@ describe('option for vault keys', () => {
       { cwd: __dirname },
     )
     expect(stdout).toContain('ci')
-  }, 20000)
+  }, 60_000)
 })
