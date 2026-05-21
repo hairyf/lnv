@@ -1,7 +1,7 @@
 {
   "name": "@hairy/lnv",
   "type": "module",
-  "version": "9.1.0",
+  "version": "9.1.1",
   "packageManager": "pnpm@10.6.5",
   "description": "Loading environment variables in Next.js and other frameworks can be quite cumbersome, and using dotenv or vault at runtime is also inconvenient. That's why my created this tool",
   "author": "Hairyf <wwu710632@gmail.com>",
