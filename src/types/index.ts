@@ -62,6 +62,7 @@ export interface Command extends Omit<SelectOptions<string>, 'message' | 'option
 export type Script = Command | string
 
 export interface UserConfig {
+  dts?: boolean | string
   injects?: EnvironmentOptions
   scripts?: { [command: string]: Script | string }
 }

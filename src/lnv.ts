@@ -4,7 +4,7 @@ import type { LoadEnvironmentOptions } from './types'
 import process from 'node:process'
 import { authEnvironment, context, executionScript, loadEnvironment, mergeParseEnvironment, parseUserConfig, readEnvironment } from './internal'
 import { run } from './run'
-import { write } from './write'
+import { write, writeDts } from './write'
 
 export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   // Initialize context with options
@@ -29,6 +29,11 @@ export async function lnv(options: LoadEnvironmentOptions): Promise<void> {
   Object.assign(context.parsed, context.after)
 
   mergeParseEnvironment()
+
+  if (context.dts) {
+    const filepath = context.dts === true ? 'process-env.d.ts' : context.dts
+    writeDts(filepath, context.parsed)
+  }
 
   const message = assembleMessage()
 
