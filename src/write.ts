@@ -1,4 +1,6 @@
 import fs from 'node:fs'
+import path from 'node:path'
+import process from 'node:process'
 
 export function write(filepath: string, parsed = {}): void {
   const contents = Object.entries(parsed)
@@ -9,4 +11,37 @@ export function write(filepath: string, parsed = {}): void {
     contents.join('\n'),
   ].join('\n')
   fs.writeFileSync(filepath, content, 'utf-8')
+}
+
+export function writeDts(filepath: string, parsed = {}): void {
+  const resolvedFilepath = path.isAbsolute(filepath)
+    ? filepath
+    : path.join(process.cwd(), filepath)
+
+  fs.mkdirSync(path.dirname(resolvedFilepath), { recursive: true })
+
+  function normalizeKey(key: string): string {
+    if (/^[A-Z_$]\w*$/i.test(key))
+      return key
+    return `'${key.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')}'`
+  }
+
+  const contents = Object.keys(parsed)
+    .sort()
+    .map(key => `      ${normalizeKey(key)}?: string`)
+
+  const content = [
+    'declare global {',
+    '  namespace NodeJS {',
+    '    interface ProcessEnv {',
+    ...contents,
+    '    }',
+    '  }',
+    '}',
+    '',
+    'export {}',
+    '',
+  ].join('\n')
+
+  fs.writeFileSync(resolvedFilepath, content, 'utf-8')
 }

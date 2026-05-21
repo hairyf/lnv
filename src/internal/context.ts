@@ -10,6 +10,7 @@ export const context = {
   parsedFiles: [] as string[],
 
   write: false,
+  dts: false as boolean | string,
   depth: false,
 
   script: undefined as Script | undefined,

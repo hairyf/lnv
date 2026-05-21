@@ -30,6 +30,7 @@ export async function parseUserConfig(): Promise<void> {
     merge: true,
   })
 
+  context.dts = config.dts ?? false
   context.script = config.scripts?.[context.entries[0] as string] as Script
   context.entries = context.script
     ? context.entries.slice(1)
